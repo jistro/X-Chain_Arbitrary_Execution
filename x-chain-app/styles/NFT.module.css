@@ -1,0 +1,70 @@
+.header {
+  min-height: 22vh;
+  background-color: #ffbb9e;
+  padding: 2vw 2vw;
+  border-top-left-radius: 1vw;
+  border-top-right-radius: 1vw;
+}
+.container {
+  padding: 0vw 15vw;
+  background-color: #ff814b;
+}
+.main {
+  padding-top: 10vw;
+  min-height: 68vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.main h1 {
+  line-height: 1.15;
+  font-size: 2rem;
+  font-weight: 800;
+  text-decoration: underline;
+  color: #16355c;
+}
+
+.containerOutsideForm {
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+}
+
+.containerOutsideForm h2 {
+  line-height: 1.15;
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: underline;
+  color: #16355c;
+  margin-bottom: 1vh;
+}
+.containerFormTop,
+.containerFormBottom {
+  padding: 2vw 2vw;
+}
+
+.containerFormTop {
+  background-color: #fff;
+  
+  border-top-left-radius: 2.5vw;
+  border-top-right-radius: 2.5vw;
+}
+
+.containerFormBottom {
+  background-color: #ffbb9e;
+  border-bottom-left-radius: 2.5vw;
+  border-bottom-right-radius: 2.5vw;
+}
+
+
+.footer {
+  min-height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #ff814b;
+  border-bottom-left-radius: 2.5vw;
+  border-bottom-right-radius: 2.5vw;
+}

@@ -3,7 +3,15 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/NFT.module.css";
 import HamburgerMenu from "../components/hamburgerMenu";
-import { Input } from "@chakra-ui/react";
+import {
+  Button,
+  Input,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@chakra-ui/react";
 
 const Home: NextPage = () => {
   return (
@@ -25,16 +33,77 @@ const Home: NextPage = () => {
           <h1>NFT Wrapping/ Unwrapping function</h1>
           <div className={styles.containerOutsideForm}>
             <h2>New Collection Smart Contract (wrapped)</h2>
-            <Input placeholder='0x...' backgroundColor={'white'} />
+            <Input placeholder="0x..." backgroundColor={"white"} />
           </div>
-
           <div className={styles.containerFormTop}>
-            <h2>Collection Smart Contract (unwrapped)</h2>
-            <Input placeholder='0x...' backgroundColor={'white'} />
+            <h2>Debug information</h2>
+            <br />
+            <p>
+              Original SC:{" "}
+              <strong>0x63c3774531EF83631111Fe2Cf01520Fb3F5A68F7</strong>
+            </p>
+            <p>
+              Original Chain: <strong>Avalanche fuji</strong>
+            </p>
+            <p>
+              Chain ID: <strong>43113</strong>
+            </p>
+            <p>
+              Destination Chain: <strong>Ethereum sepolia</strong>
+            </p>
+            <p>
+              Chain ID: <strong>43114</strong>
+            </p>
+            <p>
+              Using CCIP: <strong>Yes</strong>
+            </p>
+            <p>
+              Using Teleporter: <strong>Yes</strong>
+            </p>
           </div>
           <div className={styles.containerFormBottom}>
-            <h2>Collection Smart Contract (unwrapped)</h2>
-            <Input placeholder='0x...' backgroundColor={'white'} />
+            <Tabs variant="unstyled">
+              <TabList>
+                <Tab
+                  fontSize={"1.5vw"}
+                  color={"#16355c"}
+                  _selected={{ color: "#16355c", bg: "#ff814b" }}
+                >
+                  My NFTs to Wrap
+                </Tab>
+                <Tab
+                  fontSize={"1.5vw"}
+                  color={"#16355c"}
+                  _selected={{
+                    color: "#16355c",
+                    bg: "#ff814b",
+                    borderBottomRightRadius: "2.5vw",
+                  }}
+                >
+                  Wrapped NFTs
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <div className={styles.containerFormBottom__form}>
+                    <div className={styles.containerFormBottom__form__ButtonContainer}>
+                      <Button size={"sm"}>Give autorization</Button>
+                      <Button size={"sm"}>Sign message</Button>
+                      <Button
+                        size={"sm"}
+                        backgroundColor={"#ff814b"}
+                        _hover={{ backgroundColor: "#bb5c34" }}
+                      >
+                        Wrap!
+                      </Button>
+                    </div>
+                  </div>
+                </TabPanel>
+                <TabPanel>
+                  <div className={styles.containerFormBottom__form}>two!</div>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </div>
         </main>
       </div>

@@ -2,11 +2,11 @@
   min-height: 22vh;
   background-color: #ffbb9e;
   padding: 2vw 2vw;
-  border-top-left-radius: 1vw;
-  border-top-right-radius: 1vw;
+  border-top-left-radius: 2vw;
+  border-top-right-radius: 2vw;
 }
 .container {
-  padding: 0vw 15vw;
+  padding: 0vw 12vw;
   background-color: #ff814b;
 }
 .main {
@@ -32,20 +32,16 @@
 
 .containerOutsideForm h2 {
   line-height: 1.15;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 800;
   text-decoration: underline;
   color: #16355c;
   margin-bottom: 1vh;
 }
-.containerFormTop,
-.containerFormBottom {
-  padding: 2vw 2vw;
-}
 
 .containerFormTop {
   background-color: #fff;
-  
+  padding: 2.5vw 4vw;
   border-top-left-radius: 2.5vw;
   border-top-right-radius: 2.5vw;
 }
@@ -56,6 +52,50 @@
   border-bottom-right-radius: 2.5vw;
 }
 
+.containerFormBottom__form {
+  padding: 0.5vw 2vw;
+}
+
+.containerFormTop h2,
+.containerFormBottom h2,
+.containerFormBottom__form h2 {
+  line-height: 1.15;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #16355c;
+  text-decoration: underline;
+  margin-bottom: 1vh;
+}
+
+.containerFormTop p,
+.containerFormBottom p,
+.containerFormBottom__form p {
+  line-height: 1.15;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #16355c;
+  margin-bottom: 1vh;
+}
+
+.containerFormTop strong,
+.containerFormBottom strong {
+  line-height: 1.15;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #16355c;
+  margin-bottom: 1vh;
+}
+
+.containerFormBottom__form__ButtonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2vh;
+}
+
+.containerFormBottom__form__ButtonContainer Button {
+  margin-right: 1vw;
+}
 
 .footer {
   min-height: 10vh;

@@ -1,9 +1,15 @@
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { Space_Mono } from "next/font/google";
+import {
+  getDefaultWallets,
+  lightTheme,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import type { AppProps } from "next/app";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
+  Chain,
   arbitrum,
   goerli,
   mainnet,
@@ -15,8 +21,30 @@ import {
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
 
+const amplify: Chain = {
+  id: 78430,
+  name: "Amplify Subnet Testnet",
+  network: "Amplify Subnet Testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Amplify",
+    symbol: "AMP",
+  },
+  rpcUrls: {
+    public: { http: ["https://subnets.avax.network/amplify/testnet/rpc"] },
+    default: { http: ["https://subnets.avax.network/amplify/testnet/rpc"] }
+  },
+  blockExplorers: {
+    etherscan: { name: 'Subnet explorer', url: 'https://subnets-test.avax.network/amplify' },
+    default: { name: 'Subnet explorer', url: 'https://subnets-test.avax.network/amplify' },
+  },
+  testnet: true,
+  iconUrl: "/iconAmplify.png", 
+};
+
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
+    amplify,
     mainnet,
     polygon,
     optimism,
@@ -41,22 +69,31 @@ const wagmiConfig = createConfig({
   webSocketPublicClient,
 });
 
+const fonts = Space_Mono({
+  subsets: ["latin-ext"],
+  weight: "400",
+  style: "normal",
+});
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider>
-      <WagmiConfig config={wagmiConfig}>
-        <RainbowKitProvider chains={chains}
-          theme={lightTheme({
-            accentColor: 'white',
-            accentColorForeground: '#16355C',
-            fontStack: 'system',
-            borderRadius: 'medium',
-          })}
-        >
-          <Component {...pageProps} />
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </ChakraProvider>
+    <div {...pageProps} className={fonts.className}>
+      <ChakraProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <RainbowKitProvider
+            chains={chains}
+            theme={lightTheme({
+              accentColor: "white",
+              accentColorForeground: "#16355C",
+              fontStack: "system",
+              borderRadius: "medium",
+            })}
+          >
+            <Component {...pageProps} />
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ChakraProvider>
+    </div>
   );
 }
 

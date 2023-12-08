@@ -10,16 +10,13 @@ import type { AppProps } from "next/app";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
   Chain,
-  arbitrum,
-  goerli,
-  mainnet,
-  optimism,
-  polygon,
-  base,
-  zora,
+  sepolia,
+  avalancheFuji,
+ 
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
+import { sep } from "path";
 
 const amplify: Chain = {
   id: 78430,
@@ -32,26 +29,80 @@ const amplify: Chain = {
   },
   rpcUrls: {
     public: { http: ["https://subnets.avax.network/amplify/testnet/rpc"] },
-    default: { http: ["https://subnets.avax.network/amplify/testnet/rpc"] }
+    default: { http: ["https://subnets.avax.network/amplify/testnet/rpc"] },
   },
   blockExplorers: {
-    etherscan: { name: 'Subnet explorer', url: 'https://subnets-test.avax.network/amplify' },
-    default: { name: 'Subnet explorer', url: 'https://subnets-test.avax.network/amplify' },
+    etherscan: {
+      name: "Subnet explorer",
+      url: "https://subnets-test.avax.network/amplify",
+    },
+    default: {
+      name: "Subnet explorer",
+      url: "https://subnets-test.avax.network/amplify",
+    },
   },
   testnet: true,
-  
+};
+
+const bulletin: Chain = {
+  id: 78431,
+  name: "Bulletin Subnet Testnet",
+  network: "Bulletin Subnet Testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Bulletin",
+    symbol: "BLT",
+  },
+  rpcUrls: {
+    public: { http: ["https://subnets.avax.network/bulletin/testnet/rpc"] },
+    default: { http: ["https://subnets.avax.network/bulletin/testnet/rpc"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Subnet explorer",
+      url: "https://subnets-test.avax.network/bulletin",
+    },
+    default: {
+      name: "Subnet explorer",
+      url: "https://subnets-test.avax.network/bulletin",
+    },
+  },
+  testnet: true,
+};
+
+const conduit: Chain = {
+  id: 78432,
+  name: "Conduit Subnet Testnet",
+  network: "Conduit Subnet Testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Conduit",
+    symbol: "CON",
+  },
+  rpcUrls: {
+    public: { http: ["https://subnets.avax.network/conduit/testnet/rpc"] },
+    default: { http: ["https://subnets.avax.network/conduit/testnet/rpc"] },
+  },
+  blockExplorers: {
+    etherscan: {
+      name: "Subnet explorer",
+      url: "https://subnets-test.avax.network/conduit",
+    },
+    default: {
+      name: "Subnet explorer",
+      url: "https://subnets-test.avax.network/conduit",
+    },
+  },
+  testnet: true,
 };
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
-    {...amplify, iconUrl: "/iconAmplify.png"},
-    mainnet,
-    polygon,
-    optimism,
-    arbitrum,
-    base,
-    zora,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [goerli] : []),
+    { ...amplify, iconUrl: "/iconAmplify.png" },
+    { ...bulletin, iconUrl: "/iconBulletin.png" },
+    { ...conduit, iconUrl: "/iconConduit.png" },
+    sepolia,
+    avalancheFuji,
   ],
   [publicProvider()]
 );

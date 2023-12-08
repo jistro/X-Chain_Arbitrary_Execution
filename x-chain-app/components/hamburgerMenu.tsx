@@ -46,7 +46,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
           <MenuButton
             as={IconButton}
             aria-label="Options"
-            icon={<FaBars color="#16355C" />}
+            icon={<FaBars color="#16355C" size={"3vw"}/>}
             colorScheme="none"
           />
           <MenuList>
@@ -55,34 +55,16 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
               backgroundColor={numberBlocker === 1 ? "gray.500" : ""}
               color={numberBlocker === 1 ? "white" : ""}
             >
-              Create gm Fam!
+              NFT Wrapping (Original Chain)
             </MenuItem>
             <MenuItem
               onClick={() =>
-                numberBlocker != 2 && (window.location.href = "/mint")
+                numberBlocker != 2 && (window.location.href = "/newChain")
               }
               backgroundColor={numberBlocker === 2 ? "gray.500" : ""}
               color={numberBlocker === 2 ? "white" : ""}
             >
-              Wrap &amp; Mint NFT
-            </MenuItem>
-            <MenuItem
-              onClick={() =>
-                numberBlocker != 3 && (window.location.href = "/goBack")
-              }
-              backgroundColor={numberBlocker === 3 ? "gray.500" : ""}
-              color={numberBlocker === 3 ? "white" : ""}
-            >
-              Go back to the Original Collection
-            </MenuItem>
-            <MenuItem
-              onClick={() =>
-                numberBlocker != 4 && (window.location.href = "/adminPanel")
-              }
-              backgroundColor={numberBlocker === 4 ? "gray.500" : ""}
-              color={numberBlocker === 4 ? "white" : ""}
-            >
-              Admin panel
+              NFT Unwrapping (New Chain)
             </MenuItem>
           </MenuList>
         </Menu>

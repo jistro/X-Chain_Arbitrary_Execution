@@ -39,12 +39,12 @@ const amplify: Chain = {
     default: { name: 'Subnet explorer', url: 'https://subnets-test.avax.network/amplify' },
   },
   testnet: true,
-  iconUrl: "/iconAmplify.png", 
+  
 };
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
-    amplify,
+    {...amplify, iconUrl: "/iconAmplify.png"},
     mainnet,
     polygon,
     optimism,

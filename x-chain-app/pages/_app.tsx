@@ -20,7 +20,7 @@ import { sep } from "path";
 
 const amplify: Chain = {
   id: 78430,
-  name: "Amplify Subnet Testnet",
+  name: "Amplify Subnet",
   network: "Amplify Subnet Testnet",
   nativeCurrency: {
     decimals: 18,
@@ -46,7 +46,7 @@ const amplify: Chain = {
 
 const bulletin: Chain = {
   id: 78431,
-  name: "Bulletin Subnet Testnet",
+  name: "Bulletin Subnet",
   network: "Bulletin Subnet Testnet",
   nativeCurrency: {
     decimals: 18,
@@ -72,7 +72,7 @@ const bulletin: Chain = {
 
 const conduit: Chain = {
   id: 78432,
-  name: "Conduit Subnet Testnet",
+  name: "Conduit Subnet",
   network: "Conduit Subnet Testnet",
   nativeCurrency: {
     decimals: 18,
@@ -98,11 +98,11 @@ const conduit: Chain = {
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
+    sepolia,
+    avalancheFuji,
     { ...amplify, iconUrl: "/iconAmplify.png" },
     { ...bulletin, iconUrl: "/iconBulletin.png" },
     { ...conduit, iconUrl: "/iconConduit.png" },
-    sepolia,
-    avalancheFuji,
   ],
   [publicProvider()]
 );

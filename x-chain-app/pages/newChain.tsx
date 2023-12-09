@@ -138,11 +138,27 @@ const Home: NextPage = () => {
     signMessage({ message });
   };
 
+  const makeSignMessageGoBack = () => {
+    const inputIDs = ["goBackNFT__tokenIdInput"];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    const message = `ccipSetIdToUnwrap(uint256, address, string),${inputs[0]},${address},signature`;
+    signMessage({ message });
+  };
+
   const safeMint = () => {
-    const inputIDs = [
-      "fetchGmFamAddress__addressInput",
-      "NFT__tokenIdInput",
-    ];
+    const inputIDs = ["fetchGmFamAddress__addressInput", "NFT__tokenIdInput"];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
@@ -182,15 +198,18 @@ const Home: NextPage = () => {
         args: [inputs[1]],
       }).then((result) => {
         console.log(result);
-        if (!result){
-          toast.error("You can't mint, please check the tokenId or if you wrapped, check the CCIP explorer", {
-            duration: 4000,
-            position: "top-right",
-          });
+        if (!result) {
+          toast.error(
+            "You can't mint, please check the tokenId or if you wrapped, check the CCIP explorer",
+            {
+              duration: 4000,
+              position: "top-right",
+            }
+          );
           return;
         }
       });
-      
+
       if (data === undefined) {
         return;
       } else {
@@ -217,6 +236,78 @@ const Home: NextPage = () => {
               duration: 2000,
               position: "top-right",
             });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    }
+  };
+
+  const goBack = () => {
+    const inputIDs = [
+      "fetchGmFamAddress__addressInput",
+      "goBackNFT__tokenIdInput",
+    ];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (!isSuccess) {
+      toast.error("Please sign the message", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    const { chain, chains } = getNetwork();
+    var idChain = chain?.id.toString() ?? "";
+    if (idChain === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    if (["78430", "78431", "78432"].includes(idChain)) {
+      console.log("teleporter");
+    } else {
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
+      prepareWriteContract({
+        address: inputs[0] as "0x${string}",
+        abi: GmFamCCIP.abi,
+        functionName: "goBackToOriginalCollection",
+        args: [inputs[1], dataSigned],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Mint passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+            setTxHashData(["ccip", result.hash]);
           })
           .catch((error) => {
             console.log(error);
@@ -279,17 +370,13 @@ const Home: NextPage = () => {
                 <p>
                   Original Chain:{" "}
                   <strong>
-                    {scNewChainMetadata[0] === ""
-                      ? ""
-                      : scNewChainMetadata[0]}
+                    {scNewChainMetadata[0] === "" ? "" : scNewChainMetadata[0]}
                   </strong>
                 </p>
                 <p>
                   Destination/Original Chain:{" "}
                   <strong>
-                    {scNewChainMetadata[1] === ""
-                      ? ""
-                      : scNewChainMetadata[1]}
+                    {scNewChainMetadata[1] === "" ? "" : scNewChainMetadata[1]}
                   </strong>
                 </p>
                 <p>
@@ -297,7 +384,7 @@ const Home: NextPage = () => {
                   <strong>
                     {["78430", "78431", "78432"].includes(chainData[0])
                       ? "Teleporter"
-                      : ["43113","11155111"].includes(chainData[0])
+                      : ["43113", "11155111"].includes(chainData[0])
                       ? "CCIP"
                       : ""}
                   </strong>
@@ -363,6 +450,37 @@ const Home: NextPage = () => {
                             <p>Mint!</p>
                           </Button>
                         </div>
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div className={styles.containerFormBottom__form}>
+                        <p>Token ID</p>
+                        <div>
+                          <Input
+                            placeholder="0"
+                            backgroundColor={"white"}
+                            size={"sm"}
+                            style={{ width: "20vw" }}
+                            id="goBackNFT__tokenIdInput"
+                          />
+                        </div>
+                        <div
+                          className={
+                            styles.containerFormBottom__form__ButtonContainer
+                          }
+                        >
+                          <Button size="xs" onClick={makeSignMessageGoBack}>
+                            <p>{isSuccess ? "signed!" : "Sign message"}</p>
+                          </Button>
+                          <Button
+                            size="xs"
+                            backgroundColor={"#ff814b"}
+                            _hover={{ backgroundColor: "#bb5c34" }}
+                            onClick={goBack}
+                          >
+                            <p>Go back!</p>
+                          </Button>
+                        </div>
                         {txHashData[0] !== "none" ? (
                           <>
                             <p>
@@ -393,36 +511,6 @@ const Home: NextPage = () => {
                         ) : (
                           <></>
                         )}
-                      </div>
-                    </TabPanel>
-                    <TabPanel>
-                      <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
-                        <div>
-                          <Input
-                            placeholder="0"
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="unwrapNFT__tokenIdInput"
-                          />
-                        </div>
-                        <div
-                          className={
-                            styles.containerFormBottom__form__ButtonContainer
-                          }
-                        >
-                          <Button size="xs" onClick={makeSignMessage}>
-                            <p>{isSuccess ? "signed!" : "Sign message"}</p>
-                          </Button>
-                          <Button
-                            size="xs"
-                            backgroundColor={"#ff814b"}
-                            _hover={{ backgroundColor: "#bb5c34" }}
-                          >
-                            <p>Go back!</p>
-                          </Button>
-                        </div>
                       </div>
                     </TabPanel>
                   </TabPanels>

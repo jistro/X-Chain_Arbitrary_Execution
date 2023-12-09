@@ -316,6 +316,112 @@ const Home: NextPage = () => {
     }
   };
 
+  const makeSignMessageWithdrawMyToken = () => {
+    const inputIDs = ["withdrawMyTokenNFT__tokenIdInput"];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    const message = `ccipSetIdToUnwrap(uint256, address, string),${inputs[0]},${address},signature`;
+    signMessage({ message });
+  };
+
+  const withdrawMyToken = () => {
+    const inputIDs = ["fetchTreasuryAndWrapperAddress__addressInput", "withdrawMyTokenNFT__tokenIdInput"];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (!isSuccess) {
+      toast.error("Please sign the message", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    const { chain, chains } = getNetwork();
+    var idChain = chain?.id.toString() ?? "";
+    if (idChain === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    if (["78430", "78431", "78432"].includes(idChain)) {
+      console.log("teleporter");
+    } else {
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: TreasuryAndWrapperCCIP.abi,
+        functionName: "seeIfCanUnwrap",
+        args: [inputs[1]],
+      }).then((result) => {
+        console.log(result);
+        if (!result) {
+          toast.error(
+            "You can't mint, please check the tokenId or if you wrapped, check the CCIP explorer",
+            {
+              duration: 4000,
+              position: "top-right",
+            }
+          );
+          return;
+        }
+      });
+
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
+      prepareWriteContract({
+        address: inputs[0] as "0x${string}",
+        abi: TreasuryAndWrapperCCIP.abi,
+        functionName: "withdrawMyToken",
+        args: [inputs[1], dataSigned],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Unwrap passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    }
+  };
+
   return (
     <>
       {isClient && (
@@ -505,7 +611,7 @@ const Home: NextPage = () => {
                             backgroundColor={"white"}
                             size={"sm"}
                             style={{ width: "20vw" }}
-                            id="unwrapNFT__tokenIdInput"
+                            id="withdrawMyTokenNFT__tokenIdInput"
                           />
                         </div>
                         <div
@@ -513,13 +619,14 @@ const Home: NextPage = () => {
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size="xs" onClick={makeSignMessage}>
+                          <Button size="xs" onClick={makeSignMessageWithdrawMyToken}>
                             <p>{isSuccess ? "signed!" : "Sign message"}</p>
                           </Button>
                           <Button
                             size="xs"
                             backgroundColor={"#ff814b"}
                             _hover={{ backgroundColor: "#bb5c34" }}
+                            onClick={withdrawMyToken}
                           >
                             <p>Unwrap!</p>
                           </Button>

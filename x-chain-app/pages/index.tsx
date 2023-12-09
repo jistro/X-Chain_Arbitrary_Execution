@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 
 import TreasuryAndWrapperCCIP from "../abis/ccip/TreasuryAndWrapperCCIP.json";
 import ERC721 from "../abis/ERC721.json";
+
 import { useAccount, useSignMessage } from "wagmi";
 
 const Home: NextPage = () => {
@@ -26,7 +27,6 @@ const Home: NextPage = () => {
     setIsClient(true);
   }, []);
 
-
   const [chainData, setChainData] = useState<any>(["", ""]);
 
   const [scOriginalChainMetadata, setScOriginalChainMetadata] = useState<any>([
@@ -34,6 +34,9 @@ const Home: NextPage = () => {
     "",
     "",
   ]);
+
+  const [txHashData, setTxHashData] = useState<any>([""]);
+
   const { address, isConnected } = useAccount();
 
   const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
@@ -215,15 +218,97 @@ const Home: NextPage = () => {
 
     const message = `ccipSetMint(uint256, address, string),${inputs[0]},${address},signature`;
     signMessage({ message });
-
   };
 
   const passMint = () => {
     const inputIDs = [
       "fetchTreasuryAndWrapperAddress__addressInput",
-      "wrapNFT__tokenIdInput"
+      "wrapNFT__tokenIdInput",
     ];
-  }
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (!isSuccess) {
+      toast.error("Please sign the message", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    readContract({
+      address: inputs[0] as `0x${string}`,
+      abi: TreasuryAndWrapperCCIP.abi,
+      functionName: "seeOriginalContractAddress",
+    }).then((result) => {
+      console.log(result);
+      readContract({
+        address: result as `0x${string}`,
+        abi: ERC721.abi,
+        functionName: "getApproved",
+        args: [inputs[1]],
+      }).then((result) => {
+        if (result !== inputs[0]) {
+          toast.error(
+            `The address is not the approved for the token #${inputs[1]}`,
+            {
+              duration: 3000,
+              position: "top-right",
+            }
+          );
+          return;
+        }
+      });
+    });
+    const { chain, chains } = getNetwork();
+    var idChain = chain?.id.toString() ?? "";
+    if (idChain === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    if (["78430", "78431", "78432"].includes(idChain)) {
+      console.log("teleporter");
+    } else {
+      prepareWriteContract({
+        address: data as "0x${string}",
+        abi: TreasuryAndWrapperCCIP.abi,
+        functionName: "passMint",
+        args: [inputs[1], data?.toString()],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Mint passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    }
+  };
 
   return (
     <>
@@ -362,12 +447,13 @@ const Home: NextPage = () => {
                             <p>Give autorization</p>
                           </Button>
                           <Button size="xs" onClick={makeSignMessage}>
-                            <p>{isSuccess  ? "signed!": "Sign message"}</p>
+                            <p>{isSuccess ? "signed!" : "Sign message"}</p>
                           </Button>
                           <Button
                             size="xs"
                             backgroundColor={"#ff814b"}
                             _hover={{ backgroundColor: "#bb5c34" }}
+                            onClick={passMint}
                           >
                             <p>Wrap!</p>
                           </Button>
@@ -392,7 +478,7 @@ const Home: NextPage = () => {
                           }
                         >
                           <Button size="xs" onClick={makeSignMessage}>
-                            <p>{isSuccess  ? "signed!": "Sign message"}</p>
+                            <p>{isSuccess ? "signed!" : "Sign message"}</p>
                           </Button>
                           <Button
                             size="xs"
@@ -401,7 +487,6 @@ const Home: NextPage = () => {
                           >
                             <p>Unwrap!</p>
                           </Button>
-                          
                         </div>
                       </div>
                     </TabPanel>

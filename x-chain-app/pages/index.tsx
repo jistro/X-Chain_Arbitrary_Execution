@@ -14,9 +14,11 @@ import {
 } from "@chakra-ui/react";
 import { getNetwork } from "@wagmi/core";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
+import toast from "react-hot-toast";
 
 import TreasuryAndWrapperCCIP from "../abis/ccip/TreasuryAndWrapperCCIP.json";
-import toast from "react-hot-toast";
+import ERC721 from "../abis/ERC721.json";
+import { useAccount, useSignMessage } from "wagmi";
 
 const Home: NextPage = () => {
   const [isClient, setIsClient] = useState(false);
@@ -24,19 +26,26 @@ const Home: NextPage = () => {
     setIsClient(true);
   }, []);
 
+
   const [chainData, setChainData] = useState<any>(["", ""]);
+
   const [scOriginalChainMetadata, setScOriginalChainMetadata] = useState<any>([
     "",
     "",
     "",
   ]);
+  const { address, isConnected } = useAccount();
+
+  const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
+    message: "gm wagmi frens",
+  });
+
   const fetchTreasuryAndWrapperAddress = async () => {
     const { chain, chains } = getNetwork();
     if (chain) {
       console.log("deploying on ", chain.name);
       console.log("", chain.nativeCurrency.symbol);
       console.log("", chain.id.toString());
-
     } else {
       console.log("desconected");
       return;
@@ -46,10 +55,16 @@ const Home: NextPage = () => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
     });
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
     console.log(inputs);
     if (["78430", "78431", "78432"].includes(chain.id.toString())) {
       console.log("teleporter");
-
     } else {
       console.log("ccip");
       readContract({
@@ -110,13 +125,105 @@ const Home: NextPage = () => {
               duration: 3000,
               position: "top-right",
             }
-            
           );
           setScOriginalChainMetadata(["", "", ""]);
           setChainData(["", ""]);
         });
     }
   };
+
+  const givePermission = async () => {
+    const inputIDs = [
+      "fetchTreasuryAndWrapperAddress__addressInput",
+      "wrapNFT__tokenIdInput",
+    ];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+    console.log(inputs);
+
+    //marcar cuando falta algun input
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill all the inputs", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    var srcAddress = inputs[0];
+    var tokenId = inputs[1];
+    console.log(srcAddress);
+
+    readContract({
+      address: inputs[0] as `0x${string}`,
+      abi: TreasuryAndWrapperCCIP.abi,
+      functionName: "seeOriginalContractAddress",
+    })
+      .then((data) => {
+        prepareWriteContract({
+          address: data as "0x${string}",
+          abi: ERC721.abi,
+          functionName: "approve",
+          args: [srcAddress, tokenId],
+          account: address,
+        })
+          .then((data) => {
+            writeContract(data)
+              .then((result) => {
+                toast(`Hash: ${result.hash}`, {
+                  duration: 3000,
+                  position: "top-right",
+                  style: {
+                    wordWrap: "break-word",
+                    wordBreak: "break-all",
+                  },
+                });
+                toast.success("Permission granted", {
+                  duration: 2000,
+                  position: "top-right",
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const makeSignMessage = () => {
+    const inputIDs = ["wrapNFT__tokenIdInput"];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the address input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    const message = `ccipSetMint(uint256, address, string),${inputs[0]},${address},signature`;
+    signMessage({ message });
+
+  };
+
+  const passMint = () => {
+    const inputIDs = [
+      "fetchTreasuryAndWrapperAddress__addressInput",
+      "wrapNFT__tokenIdInput"
+    ];
+  }
 
   return (
     <>
@@ -147,7 +254,7 @@ const Home: NextPage = () => {
           </header>
           <div className={styles.container}>
             <main className={styles.main}>
-              <h1>NFT Wrapping function</h1>
+              <h1>NFT Wrapping function (Original Chain)</h1>
               <div className={styles.containerOutsideForm}>
                 <h2>Treasury and wrapper Smart Contract Address</h2>
                 <Input
@@ -243,6 +350,7 @@ const Home: NextPage = () => {
                             backgroundColor={"white"}
                             size={"sm"}
                             style={{ width: "20vw" }}
+                            id="wrapNFT__tokenIdInput"
                           />
                         </div>
                         <div
@@ -250,11 +358,11 @@ const Home: NextPage = () => {
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size="xs">
+                          <Button size="xs" onClick={givePermission}>
                             <p>Give autorization</p>
                           </Button>
-                          <Button size="xs">
-                            <p>Sign message</p>
+                          <Button size="xs" onClick={makeSignMessage}>
+                            <p>{isSuccess  ? "signed!": "Sign message"}</p>
                           </Button>
                           <Button
                             size="xs"
@@ -275,6 +383,7 @@ const Home: NextPage = () => {
                             backgroundColor={"white"}
                             size={"sm"}
                             style={{ width: "20vw" }}
+                            id="unwrapNFT__tokenIdInput"
                           />
                         </div>
                         <div
@@ -282,16 +391,17 @@ const Home: NextPage = () => {
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size={"sm"}>
-                            <p>Sign message</p>
+                          <Button size="xs" onClick={makeSignMessage}>
+                            <p>{isSuccess  ? "signed!": "Sign message"}</p>
                           </Button>
                           <Button
-                            size={"sm"}
+                            size="xs"
                             backgroundColor={"#ff814b"}
                             _hover={{ backgroundColor: "#bb5c34" }}
                           >
                             <p>Unwrap!</p>
                           </Button>
+                          
                         </div>
                       </div>
                     </TabPanel>

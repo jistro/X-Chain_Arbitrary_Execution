@@ -27,7 +27,11 @@
 
 .containerOutsideForm {
   margin-top: 5vh;
-  margin-bottom: 5vh;
+  margin-bottom: 2vh;
+}
+
+.containerOutsideForm Button {
+  margin-top: 1vh;
 }
 
 .containerOutsideForm h2 {

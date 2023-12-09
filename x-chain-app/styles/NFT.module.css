@@ -5,6 +5,11 @@
   border-top-left-radius: 2vw;
   border-top-right-radius: 2vw;
 }
+
+.header img {
+  width: 30vw;
+}
+
 .container {
   padding: 0vw 12vw;
   background-color: #ff814b;
@@ -95,6 +100,7 @@
   flex-direction: row;
   align-items: center;
   margin-top: 2vh;
+  margin-bottom: 2vh;
 }
 
 .containerFormBottom__form__ButtonContainer Button {

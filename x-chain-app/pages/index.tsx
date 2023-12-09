@@ -35,7 +35,7 @@ const Home: NextPage = () => {
     "",
   ]);
 
-  const [txHashData, setTxHashData] = useState<any>([""]);
+  const [txHashData, setTxHashData] = useState<any>(["none", ""]);
 
   const { address, isConnected } = useAccount();
 
@@ -281,11 +281,16 @@ const Home: NextPage = () => {
     if (["78430", "78431", "78432"].includes(idChain)) {
       console.log("teleporter");
     } else {
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
       prepareWriteContract({
-        address: data as "0x${string}",
+        address: inputs[0] as "0x${string}",
         abi: TreasuryAndWrapperCCIP.abi,
         functionName: "passMint",
-        args: [inputs[1], data?.toString()],
+        args: [inputs[1], dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -302,6 +307,7 @@ const Home: NextPage = () => {
               duration: 2000,
               position: "top-right",
             });
+            setTxHashData(["ccip", result.hash]);
           })
           .catch((error) => {
             console.log(error);
@@ -389,7 +395,7 @@ const Home: NextPage = () => {
                   <strong>
                     {["78430", "78431", "78432"].includes(chainData[0])
                       ? "Teleporter"
-                      : ["43113"].includes(chainData[0])
+                      : ["43113","11155111"].includes(chainData[0])
                       ? "CCIP"
                       : ""}
                   </strong>
@@ -458,6 +464,36 @@ const Home: NextPage = () => {
                             <p>Wrap!</p>
                           </Button>
                         </div>
+                        {txHashData[0] !== "none" ? (
+                          <>
+                            <p>
+                              <strong>Hash: </strong>
+                              {txHashData[1]}
+                            </p>
+                            <p>
+                              Please go to the following link to see the
+                              transaction using the hash:
+                            </p>
+                            <a
+                              href={`https://ccip.chain.link/`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <strong> {`https://ccip.chain.link/`}</strong>
+                            </a>
+                            <br />
+                            <Button
+                              size="xs"
+                              colorScheme="red"
+                              style={{ marginTop: "1vw" }}
+                              onClick={() => setTxHashData(["none", ""])}
+                            >
+                              <p>Close</p>
+                            </Button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
                       </div>
                     </TabPanel>
                     <TabPanel>

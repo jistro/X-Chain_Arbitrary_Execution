@@ -2772,7 +2772,7 @@
                 47573
             ],
             "StringConverter": [
-                49357
+                49365
             ],
             "Strings": [
                 42957
@@ -2958,7 +2958,7 @@
                 "file": "../utils/StringConverter.sol",
                 "nameLocation": "-1:-1:-1",
                 "scope": 46370,
-                "sourceUnit": 49358,
+                "sourceUnit": 49366,
                 "symbolAliases": [
                     {
                         "foreign": {
@@ -2966,7 +2966,7 @@
                             "name": "StringConverter",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 49357,
+                            "referencedDeclaration": 49365,
                             "src": "1653:15:48",
                             "typeDescriptions": {}
                         },
@@ -7298,7 +7298,7 @@
                                                             "name": "addressToString",
                                                             "nodeType": "Identifier",
                                                             "overloadedDeclarations": [],
-                                                            "referencedDeclaration": 49327,
+                                                            "referencedDeclaration": 49335,
                                                             "src": "6594:15:48",
                                                             "typeDescriptions": {
                                                                 "typeIdentifier": "t_function_internal_pure$_t_address_$returns$_t_string_memory_ptr_$",
@@ -7363,7 +7363,7 @@
                                                             "name": "uintToString",
                                                             "nodeType": "Identifier",
                                                             "overloadedDeclarations": [],
-                                                            "referencedDeclaration": 49340,
+                                                            "referencedDeclaration": 49348,
                                                             "src": "6660:12:48",
                                                             "typeDescriptions": {
                                                                 "typeIdentifier": "t_function_internal_pure$_t_uint256_$returns$_t_string_memory_ptr_$",
@@ -7471,7 +7471,7 @@
                                                             "name": "addressToString",
                                                             "nodeType": "Identifier",
                                                             "overloadedDeclarations": [],
-                                                            "referencedDeclaration": 49327,
+                                                            "referencedDeclaration": 49335,
                                                             "src": "6769:15:48",
                                                             "typeDescriptions": {
                                                                 "typeIdentifier": "t_function_internal_pure$_t_address_$returns$_t_string_memory_ptr_$",
@@ -12421,7 +12421,7 @@
                                 "1840:15:48"
                             ],
                             "nodeType": "IdentifierPath",
-                            "referencedDeclaration": 49357,
+                            "referencedDeclaration": 49365,
                             "src": "1840:15:48"
                         },
                         "id": 45637,
@@ -12435,7 +12435,7 @@
                 "fullyImplemented": true,
                 "linearizedBaseContracts": [
                     46369,
-                    49357,
+                    49365,
                     40808,
                     42398,
                     42369,

@@ -16,7 +16,7 @@ import {
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
-import { sep } from "path";
+import { Toaster } from 'react-hot-toast';
 
 const amplify: Chain = {
   id: 78430,
@@ -126,6 +126,7 @@ const fonts = Space_Mono({
   style: "normal",
 });
 
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div {...pageProps} className={fonts.className}>
@@ -144,6 +145,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </RainbowKitProvider>
         </WagmiConfig>
       </ChakraProvider>
+      <Toaster />
     </div>
   );
 }

@@ -1,0 +1,126 @@
+.header {
+  min-height: 22vh;
+  background-color: #AFF1FF;
+  padding: 2vw 2vw;
+  border-top-left-radius: 2vw;
+  border-top-right-radius: 2vw;
+}
+
+.header img {
+  width: 30vw;
+}
+
+.container {
+  padding: 0vw 12vw;
+  background-color: #88E2FF;
+}
+.main {
+  padding-top: 10vw;
+  min-height: 68vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.main h1 {
+  line-height: 1.15;
+  font-size: 2rem;
+  font-weight: 800;
+  text-decoration: underline;
+  color: #16355c;
+}
+
+.containerOutsideForm {
+  margin-top: 5vh;
+  margin-bottom: 2vh;
+}
+
+.containerOutsideForm Button {
+  margin-top: 1vh;
+}
+
+.containerOutsideForm h2 {
+  line-height: 1.15;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: underline;
+  color: #16355c;
+  margin-bottom: 1vh;
+}
+
+.containerFormTop {
+  background-color: #fff;
+  padding: 2.5vw 4vw;
+  border-top-left-radius: 2.5vw;
+  border-top-right-radius: 2.5vw;
+}
+
+.containerFormBottom {
+  background-color: #AFF1FF;
+  border-bottom-left-radius: 2.5vw;
+  border-bottom-right-radius: 2.5vw;
+}
+
+.containerFormBottom__form {
+  padding: 0.5vw 2vw;
+}
+
+.containerFormTop h2,
+.containerFormBottom h2,
+.containerFormBottom__form h2 {
+  line-height: 1.15;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #16355c;
+  text-decoration: underline;
+  margin-bottom: 1vh;
+}
+
+.containerFormTop p,
+.containerFormBottom p,
+.containerFormBottom__form p {
+  line-height: 1.15;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #16355c;
+  margin-bottom: 1vh;
+}
+
+.containerFormTop strong,
+.containerFormBottom strong {
+  line-height: 1.15;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #16355c;
+  margin-bottom: 1vh;
+}
+
+.containerFormBottom__form__ButtonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+}
+
+.containerFormBottom__form__ButtonContainer Button {
+  margin-right: 1vw;
+}
+
+.containerFormBottom__form__ButtonContainer p {
+  line-height: 1.15;
+  font-weight: 800;
+  color: #16355c;
+}
+
+.footer {
+  min-height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #88E2FF;
+  border-bottom-left-radius: 2.5vw;
+  border-bottom-right-radius: 2.5vw;
+}

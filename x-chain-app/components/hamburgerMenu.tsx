@@ -46,7 +46,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
           <MenuButton
             as={IconButton}
             aria-label="Options"
-            icon={<FaBars color="#16355C" size={"3vw"}/>}
+            icon={<FaBars color="#16355C" size={"3vw"} />}
             colorScheme="none"
           />
           <MenuList>
@@ -66,6 +66,37 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
             >
               NFT Unwrapping (New Chain)
             </MenuItem>
+            
+            <MenuItem
+              onClick={() =>
+                numberBlocker != 3 && (window.location.href = "/daoNewChain")
+              }
+              backgroundColor={numberBlocker === 3 ? "gray.500" : ""}
+              color={numberBlocker === 3 ? "white" : ""}
+            >
+              DAO (New Chain)
+            </MenuItem>
+
+            <MenuItem
+              onClick={() =>
+                numberBlocker != 4 && (window.location.href = "/daoRoll")
+              }
+              backgroundColor={numberBlocker === 4 ? "gray.500" : ""}
+              color={numberBlocker === 4 ? "white" : ""}
+            >
+              DAO (Make vote to Original Chain)
+            </MenuItem>
+
+            <MenuItem
+              onClick={() =>
+                numberBlocker != 5 && (window.location.href = "/daoOriginalChain")
+              }
+              backgroundColor={numberBlocker === 5 ? "gray.500" : ""}
+              color={numberBlocker === 5 ? "white" : ""}
+            >
+              DAO (Original Chain)
+            </MenuItem>
+
           </MenuList>
         </Menu>
       </div>

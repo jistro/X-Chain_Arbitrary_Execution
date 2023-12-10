@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import styles from "../styles/NFT.module.css";
+import styles from "../styles/DAO.module.css";
 import HamburgerMenu from "../components/hamburgerMenu";
 import {
   Button,
   Input,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -26,6 +27,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const [RollupVote, setRollupVote] = useState(false);
+  const [MultipleVote, setMultipleVote] = useState(false);
 
   const [chainData, setChainData] = useState<any>(["", ""]);
 
@@ -175,313 +179,6 @@ const Home: NextPage = () => {
     }
   };
 
-  const makeSignMessage = () => {
-    const inputIDs = ["NFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
-
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    const functionName = ["78430", "78431", "78432"].includes(chainData[0])
-      ? "teleporterSetMint"
-      : ["43113", "11155111"].includes(chainData[0])
-      ? "ccipSetMint"
-      : "";
-
-    if (functionName === "") {
-      toast.error("Please connect to a chain", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
-    signMessage({ message });
-  };
-
-  const makeSignMessageGoBack = () => {
-    const inputIDs = ["goBackNFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
-
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    const functionName = ["78430", "78431", "78432"].includes(chainData[0])
-      ? "teleporterIdToUnwrap"
-      : ["43113", "11155111"].includes(chainData[0])
-      ? "ccipSetIdToUnwrap"
-      : "";
-
-    if (functionName === "") {
-      toast.error("Please connect to a chain", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
-    signMessage({ message });
-  };
-
-  const safeMint = () => {
-    const inputIDs = ["fetchGmFamAddress__addressInput", "NFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
-
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    if (!isSuccess) {
-      toast.error("Please sign the message", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-    const { chain, chains } = getNetwork();
-    var idChain = chain?.id.toString() ?? "";
-    if (idChain === "") {
-      toast.error("Please connect to a chain", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-    if (["78430", "78431", "78432"].includes(idChain)) {
-      console.log("teleporter");
-      readContract({
-        address: inputs[0] as `0x${string}`,
-        abi: GmFamTeleporter.abi,
-        functionName: "seeIfCanMint",
-        args: [inputs[1]],
-      }).then((result) => {
-        console.log(result);
-        if (!result) {
-          toast.error(
-            "You can't mint, please check the tokenId or if you wrapped, check the CCIP explorer",
-            {
-              duration: 4000,
-              position: "top-right",
-            }
-          );
-          return;
-        }
-      });
-
-      if (data === undefined) {
-        return;
-      } else {
-        var dataSigned = data.toString();
-      }
-      prepareWriteContract({
-        address: inputs[0] as "0x${string}",
-        abi: GmFamTeleporter.abi,
-        functionName: "safeMint",
-        args: [inputs[1], dataSigned],
-        account: address,
-      }).then((result) => {
-        writeContract(result)
-          .then((result) => {
-            toast(`Hash: ${result.hash}`, {
-              duration: 3000,
-              position: "top-right",
-              style: {
-                wordWrap: "break-word",
-                wordBreak: "break-all",
-              },
-            });
-            toast.success("Mint passed", {
-              duration: 2000,
-              position: "top-right",
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
-    } else {
-      readContract({
-        address: inputs[0] as `0x${string}`,
-        abi: GmFamCCIP.abi,
-        functionName: "seeIfCanMint",
-        args: [inputs[1]],
-      }).then((result) => {
-        console.log(result);
-        if (!result) {
-          toast.error(
-            "You can't mint, please check the tokenId or if you wrapped, check the CCIP explorer",
-            {
-              duration: 4000,
-              position: "top-right",
-            }
-          );
-          return;
-        }
-      });
-
-      if (data === undefined) {
-        return;
-      } else {
-        var dataSigned = data.toString();
-      }
-      prepareWriteContract({
-        address: inputs[0] as "0x${string}",
-        abi: GmFamCCIP.abi,
-        functionName: "safeMint",
-        args: [inputs[1], dataSigned],
-        account: address,
-      }).then((result) => {
-        writeContract(result)
-          .then((result) => {
-            toast(`Hash: ${result.hash}`, {
-              duration: 3000,
-              position: "top-right",
-              style: {
-                wordWrap: "break-word",
-                wordBreak: "break-all",
-              },
-            });
-            toast.success("Mint passed", {
-              duration: 2000,
-              position: "top-right",
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
-    }
-  };
-
-  const goBack = () => {
-    const inputIDs = [
-      "fetchGmFamAddress__addressInput",
-      "goBackNFT__tokenIdInput",
-    ];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
-
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    if (!isSuccess) {
-      toast.error("Please sign the message", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-    const { chain, chains } = getNetwork();
-    var idChain = chain?.id.toString() ?? "";
-    if (idChain === "") {
-      toast.error("Please connect to a chain", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-    if (["78430", "78431", "78432"].includes(idChain)) {
-      console.log("teleporter");
-      if (data === undefined) {
-        return;
-      } else {
-        var dataSigned = data.toString();
-      }
-      prepareWriteContract({
-        address: inputs[0] as "0x${string}",
-        abi: GmFamTeleporter.abi,
-        functionName: "goBackToOriginalCollection",
-        args: [inputs[1], dataSigned],
-        account: address,
-      }).then((result) => {
-        writeContract(result)
-          .then((result) => {
-            toast(`Hash: ${result.hash}`, {
-              duration: 3000,
-              position: "top-right",
-              style: {
-                wordWrap: "break-word",
-                wordBreak: "break-all",
-              },
-            });
-            toast.success("Mint passed", {
-              duration: 2000,
-              position: "top-right",
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
-
-    } else {
-      if (data === undefined) {
-        return;
-      } else {
-        var dataSigned = data.toString();
-      }
-      prepareWriteContract({
-        address: inputs[0] as "0x${string}",
-        abi: GmFamCCIP.abi,
-        functionName: "goBackToOriginalCollection",
-        args: [inputs[1], dataSigned],
-        account: address,
-      }).then((result) => {
-        writeContract(result)
-          .then((result) => {
-            toast(`Hash: ${result.hash}`, {
-              duration: 3000,
-              position: "top-right",
-              style: {
-                wordWrap: "break-word",
-                wordBreak: "break-all",
-              },
-            });
-            toast.success("Mint passed", {
-              duration: 2000,
-              position: "top-right",
-            });
-            setTxHashData(["ccip", result.hash]);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      });
-    }
-  };
-
   return (
     <>
       {isClient && (
@@ -496,7 +193,7 @@ const Home: NextPage = () => {
           </Head>
 
           <header className={styles.header}>
-            <HamburgerMenu numberBlocker={2} />
+            <HamburgerMenu numberBlocker={3} />
             <div
               style={{
                 marginTop: "2.5vw",
@@ -562,65 +259,142 @@ const Home: NextPage = () => {
                     <Tab
                       fontSize={"1.5vw"}
                       fontWeight={"bold"}
-                      color={"#FBBB9E"}
-                      bg={"#ff814b"}
+                      color={"#29444D"}
+                      bg={"#528899"}
                       _selected={{
                         color: "#16355C",
-                        bg: "#FBBB9E",
+                        bg: "#AFF1FF",
                         fontWeight: "bold",
                       }}
                     >
-                      Mint wrapped NFT
+                      Make a proposal
                     </Tab>
                     <Tab
                       fontSize={"1.5vw"}
                       fontWeight={"bold"}
-                      color={"#FBBB9E"}
-                      bg={"#ff814b"}
+                      color={"#29444D"}
+                      bg={"#528899"}
                       _selected={{
                         color: "#16355C",
-                        bg: "#FBBB9E",
+                        bg: "#AFF1FF",
                         fontWeight: "bold",
                       }}
                     >
-                      Go back to original chain/collection
+                      Vote
                     </Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
+                        <p>Title of the proposal</p>
                         <div>
                           <Input
-                            placeholder="0"
+                            placeholder=""
                             backgroundColor={"white"}
                             size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="NFT__tokenIdInput"
+                            id="makeProposal__titleInput"
                           />
                         </div>
+                        <p>Description of the proposal</p>
+                        <div>
+                          <Input
+                            placeholder="This proposal is about..."
+                            backgroundColor={"white"}
+                            size={"sm"}
+                            id="makeProposal__descriptionInput"
+                          />
+                        </div>
+                        <p>Rollup vote (New -&gt; Original chain)</p>
+                        <Select
+                          size={"sm"}
+                          backgroundColor={"white"}
+                          id="makeProposal__rollupVoteSelect"
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            //setRollupVote  setTypeOfProposal
+                            if (e.target.value === "yes") {
+                              setRollupVote(true);
+                            } else {
+                              setRollupVote(false);
+                            }
+                            console.log(RollupVote);
+                          }}
+                        >
+                          <option value="no">No</option>
+                          <option value="yes">Yes</option>
+                        </Select>
+                        {RollupVote && (
+                          <>
+                            <p>Original chain proposal ID</p>
+                            <div>
+                              <Input
+                                placeholder="0"
+                                backgroundColor={"white"}
+                                size={"sm"}
+                                id="makeProposal__originalChainProposalIDInput"
+                                style={{ width: "20vw" }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        <p> Type of proposal</p>
+                        <Select
+                          size={"sm"}
+                          backgroundColor={"white"}
+                          id="makeProposal__typeOfProposalSelect"
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            //setRollupVote  setTypeOfProposal
+                            if (e.target.value === "binary") {
+                              setMultipleVote(false);
+                            } else {
+                              setMultipleVote(true);
+                            }
+                            console.log(MultipleVote);
+                          }}
+                        >
+                          <option value="binary">Binary</option>
+                          <option value="multiple">Multiple</option>
+                        </Select>
+                        {MultipleVote && (
+                          <>
+                            <p>Number of options</p>
+                            <div>
+                              <Input
+                                placeholder="0"
+                                backgroundColor={"white"}
+                                size={"sm"}
+                                id="makeProposal__numberOfOptionsInput"
+                                style={{ width: "20vw" }}
+                              />
+                            </div>
+                          </>
+                        )}
+
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size="xs" onClick={makeSignMessage}>
-                            <p>{isSuccess ? "signed!" : "Sign message"}</p>
-                          </Button>
-                          <Button
-                            size="xs"
-                            backgroundColor={"#ff814b"}
-                            _hover={{ backgroundColor: "#bb5c34" }}
-                            onClick={safeMint}
-                          >
-                            <p>Mint!</p>
+                          <Button size="sm">
+                            <p>Make Proposal</p>
                           </Button>
                         </div>
                       </div>
                     </TabPanel>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
+                        <p>Proposal ID</p>
+                        <div>
+                          <Input
+                            placeholder="0"
+                            backgroundColor={"white"}
+                            size={"sm"}
+                            style={{ width: "20vw" }}
+                            id="goBackNFT__tokenIdInput"
+                          />
+                        </div>
+                        <p>Number of vote</p>
                         <div>
                           <Input
                             placeholder="0"
@@ -635,16 +409,8 @@ const Home: NextPage = () => {
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size="xs" onClick={makeSignMessageGoBack}>
-                            <p>{isSuccess ? "signed!" : "Sign message"}</p>
-                          </Button>
-                          <Button
-                            size="xs"
-                            backgroundColor={"#ff814b"}
-                            _hover={{ backgroundColor: "#bb5c34" }}
-                            onClick={goBack}
-                          >
-                            <p>Go back!</p>
+                          <Button size="sm">
+                            <p>Vote</p>
                           </Button>
                         </div>
                         {txHashData[0] !== "none" ? (

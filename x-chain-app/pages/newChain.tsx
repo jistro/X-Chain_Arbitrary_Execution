@@ -17,6 +17,7 @@ import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import toast from "react-hot-toast";
 
 import GmFamCCIP from "../abis/ccip/GmFamCCIP.json";
+import GmFamTeleporter from "../abis/teleporter/GmFamTeleporter.json";
 
 import { useAccount, useSignMessage } from "wagmi";
 
@@ -67,6 +68,61 @@ const Home: NextPage = () => {
     console.log(inputs);
     if (["78430", "78431", "78432"].includes(chain.id.toString())) {
       console.log("teleporter");
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: GmFamTeleporter.abi,
+        functionName: "crossChainSolution",
+      })
+        .then((result) => {
+          console.log(result);
+          if (result !== 2) {
+            toast.error(
+              `The address is not a Treasury and Wrapper Smart Contract`,
+              {
+                duration: 3000,
+                position: "top-right",
+              }
+            );
+            return;
+          }
+
+          readContract({
+            address: inputs[0] as `0x${string}`,
+            abi: GmFamTeleporter.abi,
+            functionName: "crossChainSolutionVariables",
+          }).then((result) => {
+            console.log(result);
+            var idTeleporter = (result as any[])[2].toString(16);
+            console.log(idTeleporter);
+            if (
+              idTeleporter ===
+              "ea70d815f0232f5419dabafe36c964ffe5c22d17ac367b60b556ab3e17a36458"
+            ) {
+              setScNewChainMetadata(["Amplify Subnet", "78430"]);
+            } else if (
+              idTeleporter ===
+              "d7cdc6f08b167595d1577e24838113a88b1005b471a6c430d79c48b4c89cfc53"
+            ) {
+              setScNewChainMetadata(["Bulletin Subnet Testnet", "78431"]);
+            } else {
+              setScNewChainMetadata(["Conduit Subnet Testnet", "78432"]);
+            }
+            setChainData([chain.id.toString(), chain.name]);
+            console.log(scNewChainMetadata);
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(
+            `Error while fetching the Treasury and Wrapper Smart Contract address please check the address and try again`,
+            {
+              duration: 3000,
+              position: "top-right",
+            }
+          );
+          setScNewChainMetadata(["", ""]);
+          setChainData(["", ""]);
+        });
     } else {
       console.log("ccip");
       readContract({
@@ -134,7 +190,21 @@ const Home: NextPage = () => {
       return;
     }
 
-    const message = `ccipSetMint(uint256, address, string),${inputs[0]},${address},signature`;
+    const functionName = ["78430", "78431", "78432"].includes(chainData[0])
+      ? "teleporterSetMint"
+      : ["43113", "11155111"].includes(chainData[0])
+      ? "ccipSetMint"
+      : "";
+
+    if (functionName === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
     signMessage({ message });
   };
 
@@ -153,7 +223,21 @@ const Home: NextPage = () => {
       return;
     }
 
-    const message = `ccipSetIdToUnwrap(uint256, address, string),${inputs[0]},${address},signature`;
+    const functionName = ["78430", "78431", "78432"].includes(chainData[0])
+      ? "teleporterIdToUnwrap"
+      : ["43113", "11155111"].includes(chainData[0])
+      ? "ccipSetIdToUnwrap"
+      : "";
+
+    if (functionName === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
     signMessage({ message });
   };
 
@@ -190,6 +274,56 @@ const Home: NextPage = () => {
     }
     if (["78430", "78431", "78432"].includes(idChain)) {
       console.log("teleporter");
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: GmFamTeleporter.abi,
+        functionName: "seeIfCanMint",
+        args: [inputs[1]],
+      }).then((result) => {
+        console.log(result);
+        if (!result) {
+          toast.error(
+            "You can't mint, please check the tokenId or if you wrapped, check the CCIP explorer",
+            {
+              duration: 4000,
+              position: "top-right",
+            }
+          );
+          return;
+        }
+      });
+
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
+      prepareWriteContract({
+        address: inputs[0] as "0x${string}",
+        abi: GmFamTeleporter.abi,
+        functionName: "safeMint",
+        args: [inputs[1], dataSigned],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Mint passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
     } else {
       readContract({
         address: inputs[0] as `0x${string}`,
@@ -280,6 +414,38 @@ const Home: NextPage = () => {
     }
     if (["78430", "78431", "78432"].includes(idChain)) {
       console.log("teleporter");
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
+      prepareWriteContract({
+        address: inputs[0] as "0x${string}",
+        abi: GmFamTeleporter.abi,
+        functionName: "goBackToOriginalCollection",
+        args: [inputs[1], dataSigned],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Mint passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+
     } else {
       if (data === undefined) {
         return;

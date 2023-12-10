@@ -17,6 +17,8 @@ import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import toast from "react-hot-toast";
 
 import TreasuryAndWrapperCCIP from "../abis/ccip/TreasuryAndWrapperCCIP.json";
+import TreasuryAndWrapperTeleporter from "../abis/teleporter/TreasuryAndWrapperTeleporter.json";
+
 import ERC721 from "../abis/ERC721.json";
 
 import { useAccount, useSignMessage } from "wagmi";
@@ -68,6 +70,83 @@ const Home: NextPage = () => {
     console.log(inputs);
     if (["78430", "78431", "78432"].includes(chain.id.toString())) {
       console.log("teleporter");
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: TreasuryAndWrapperTeleporter.abi,
+        functionName: "crossChainSolution",
+      })
+        .then((result) => {
+          console.log(result);
+          if (result !== 2) {
+            toast.error(
+              `The address is not a Treasury and Wrapper Smart Contract`,
+              {
+                duration: 3000,
+                position: "top-right",
+              }
+            );
+            return;
+          }
+          readContract({
+            address: inputs[0] as `0x${string}`,
+            abi: TreasuryAndWrapperTeleporter.abi,
+            functionName: "seeOriginalContractAddress",
+          }).then((result) => {
+            console.log(result);
+            var originalContractAddress = result;
+            readContract({
+              address: inputs[0] as `0x${string}`,
+              abi: TreasuryAndWrapperCCIP.abi,
+              functionName: "crossChainSolutionVariables",
+            }).then((result) => {
+              console.log(result);
+              //var idTeleporter = (result as any[])[2];
+              //convert to hex string
+              var idTeleporter = (result as any[])[2].toString(16);
+              console.log("id: --", idTeleporter);
+
+              if (
+                idTeleporter ===
+                "ea70d815f0232f5419dabafe36c964ffe5c22d17ac367b60b556ab3e17a36458"
+              ) {
+                setScOriginalChainMetadata([
+                  originalContractAddress,
+                  "Amplify Subnet",
+                  "78430",
+                ]);
+              } else if (
+                idTeleporter ===
+                "d7cdc6f08b167595d1577e24838113a88b1005b471a6c430d79c48b4c89cfc53"
+              ) {
+                setScOriginalChainMetadata([
+                  originalContractAddress,
+                  "Bulletin Subnet Testnet",
+                  "78431",
+                ]);
+              } else {
+                setScOriginalChainMetadata([
+                  originalContractAddress,
+                  "Conduit Subnet Testnet",
+                  "78432",
+                ]);
+              }
+              setChainData([chain.id.toString(), chain.name]);
+              console.log(scOriginalChainMetadata);
+            });
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(
+            `Error while fetching the Treasury and Wrapper Smart Contract address please check the address and try again`,
+            {
+              duration: 3000,
+              position: "top-right",
+            }
+          );
+          setScOriginalChainMetadata(["", "", ""]);
+          setChainData(["", ""]);
+        });
     } else {
       console.log("ccip");
       readContract({
@@ -215,8 +294,21 @@ const Home: NextPage = () => {
       });
       return;
     }
+    const functionName =
+      ["78430", "78431", "78432"].includes(chainData[0])
+        ? "teleporterSetMint"
+        : ["43113", "11155111"].includes(chainData[0])
+        ? "ccipSetMint"
+        : "";
 
-    const message = `ccipSetMint(uint256, address, string),${inputs[0]},${address},signature`;
+    if (functionName === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    } 
+    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
     signMessage({ message });
   };
 
@@ -245,30 +337,7 @@ const Home: NextPage = () => {
       });
       return;
     }
-    readContract({
-      address: inputs[0] as `0x${string}`,
-      abi: TreasuryAndWrapperCCIP.abi,
-      functionName: "seeOriginalContractAddress",
-    }).then((result) => {
-      console.log(result);
-      readContract({
-        address: result as `0x${string}`,
-        abi: ERC721.abi,
-        functionName: "getApproved",
-        args: [inputs[1]],
-      }).then((result) => {
-        if (result !== inputs[0]) {
-          toast.error(
-            `The address is not the approved for the token #${inputs[1]}`,
-            {
-              duration: 3000,
-              position: "top-right",
-            }
-          );
-          return;
-        }
-      });
-    });
+    
     const { chain, chains } = getNetwork();
     var idChain = chain?.id.toString() ?? "";
     if (idChain === "") {
@@ -279,8 +348,93 @@ const Home: NextPage = () => {
       return;
     }
     if (["78430", "78431", "78432"].includes(idChain)) {
-      console.log("teleporter");
+      console.log("teleporter---");
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: TreasuryAndWrapperTeleporter.abi,
+        functionName: "seeOriginalContractAddress",
+      }).then((result) => {
+        console.log(result);
+        readContract({
+          address: result as `0x${string}`,
+          abi: ERC721.abi,
+          functionName: "getApproved",
+          args: [inputs[1]],
+        }).then((result) => {
+          if (result !== inputs[0]) {
+            toast.error(
+              `The address is not the approved for the token #${inputs[1]}`,
+              {
+                duration: 3000,
+                position: "top-right",
+              }
+            );
+            return;
+          }
+        });
+      });
+      
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
+      prepareWriteContract({
+        address: inputs[0] as "0x${string}",
+        abi: TreasuryAndWrapperTeleporter.abi,
+        functionName: "passMint",
+        args: [inputs[1], dataSigned],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Mint passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+            
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+
+
     } else {
+
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: TreasuryAndWrapperCCIP.abi,
+        functionName: "seeOriginalContractAddress",
+      }).then((result) => {
+        console.log(result);
+        readContract({
+          address: result as `0x${string}`,
+          abi: ERC721.abi,
+          functionName: "getApproved",
+          args: [inputs[1]],
+        }).then((result) => {
+          if (result !== inputs[0]) {
+            toast.error(
+              `The address is not the approved for the token #${inputs[1]}`,
+              {
+                duration: 3000,
+                position: "top-right",
+              }
+            );
+            return;
+          }
+        });
+      });
+
       if (data === undefined) {
         return;
       } else {
@@ -331,12 +485,29 @@ const Home: NextPage = () => {
       return;
     }
 
-    const message = `ccipSetIdToUnwrap(uint256, address, string),${inputs[0]},${address},signature`;
+    const functionName = ["78430", "78431", "78432"].includes(chainData[0])
+      ? "teleporterIdToUnwrap"
+      : ["43113", "11155111"].includes(chainData[0])
+      ? "ccipSetIdToUnwrap"
+      : "";
+
+    if (functionName === "") {
+      toast.error("Please connect to a chain", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    } 
+
+    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
     signMessage({ message });
   };
 
   const withdrawMyToken = () => {
-    const inputIDs = ["fetchTreasuryAndWrapperAddress__addressInput", "withdrawMyTokenNFT__tokenIdInput"];
+    const inputIDs = [
+      "fetchTreasuryAndWrapperAddress__addressInput",
+      "withdrawMyTokenNFT__tokenIdInput",
+    ];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
@@ -368,6 +539,56 @@ const Home: NextPage = () => {
     }
     if (["78430", "78431", "78432"].includes(idChain)) {
       console.log("teleporter");
+      readContract({
+        address: inputs[0] as `0x${string}`,
+        abi: TreasuryAndWrapperTeleporter.abi,
+        functionName: "seeIfCanUnwrap",
+        args: [inputs[1]],
+      }).then((result) => {
+        console.log(result);
+        if (!result) {
+          toast.error(
+            "You can't mint, please check the tokenId or wait for the teleporter to finish the process",
+            {
+              duration: 4000,
+              position: "top-right",
+            }
+          );
+          return;
+        }
+      });
+
+      if (data === undefined) {
+        return;
+      } else {
+        var dataSigned = data.toString();
+      }
+      prepareWriteContract({
+        address: inputs[0] as "0x${string}",
+        abi: TreasuryAndWrapperTeleporter.abi,
+        functionName: "withdrawMyToken",
+        args: [inputs[1], dataSigned],
+        account: address,
+      }).then((result) => {
+        writeContract(result)
+          .then((result) => {
+            toast(`Hash: ${result.hash}`, {
+              duration: 3000,
+              position: "top-right",
+              style: {
+                wordWrap: "break-word",
+                wordBreak: "break-all",
+              },
+            });
+            toast.success("Unwrap passed", {
+              duration: 2000,
+              position: "top-right",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
     } else {
       readContract({
         address: inputs[0] as `0x${string}`,
@@ -501,7 +722,7 @@ const Home: NextPage = () => {
                   <strong>
                     {["78430", "78431", "78432"].includes(chainData[0])
                       ? "Teleporter"
-                      : ["43113","11155111"].includes(chainData[0])
+                      : ["43113", "11155111"].includes(chainData[0])
                       ? "CCIP"
                       : ""}
                   </strong>
@@ -619,7 +840,10 @@ const Home: NextPage = () => {
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size="xs" onClick={makeSignMessageWithdrawMyToken}>
+                          <Button
+                            size="xs"
+                            onClick={makeSignMessageWithdrawMyToken}
+                          >
                             <p>{isSuccess ? "signed!" : "Sign message"}</p>
                           </Button>
                           <Button

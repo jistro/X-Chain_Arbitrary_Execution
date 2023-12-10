@@ -1,0 +1,22 @@
+teleporterMessengerContractAddress = 0x50A46AA7b2eCBe2B1AbB7df865B9A87f5eed8635;
+
+# Amplify SUBNET
+
+subnet_a_chain_id_hex=0xea70d815f0232f5419dabafe36c964ffe5c22d17ac367b60b556ab3e17a36458
+
+nft 0xE5FBBB17a2c55D895dAB55Aad93370e25Ad34BEC
+
+https://subnets-test.avax.network/amplify/address/0xE5FBBB17a2c55D895dAB55Aad93370e25Ad34BEC?tab=code&contractTab=read
+
+
+- DeployerOriginalSubnet:  0xbb89F31D9C91fc7abC5327A9023ec6638a6f3E42
+- Treasury:  0xCfaF43C36C854d68b529ce0e22B84B17f8Af4DC3
+- Receiver:  0xa6E1eFCB08A380c979Aa959e8e6F2938e67E1e50
+
+# Bulletin SUBNET
+
+subnet_b_chain_id_hex=0xd7cdc6f08b167595d1577e24838113a88b1005b471a6c430d79c48b4c89cfc53
+
+- DeployerNewSubnet:  0xd98E841c38700ab90CEF29CA8562509318Bc454C
+- GmFam:  0x7ce1c68fEaf9F14858b22520c4660e1eFD671936
+- Receiver:  0x02356DFfC5F3a19C4aE6fBC8C3e451993E84e4F4

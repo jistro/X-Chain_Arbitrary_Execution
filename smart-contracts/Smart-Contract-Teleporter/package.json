@@ -1,0 +1,7 @@
+{
+  "name": "gm_fam_sc_telporter_lib",
+  "devDependencies": {
+    "@openzeppelin/contracts": "4.9.3"
+  }
+ 
+}

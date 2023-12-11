@@ -6,6 +6,9 @@ import HamburgerMenu from "../components/hamburgerMenu";
 import {
   Button,
   Input,
+  Radio,
+  RadioGroup,
+  Stack,
   Tab,
   TabList,
   TabPanel,
@@ -38,6 +41,35 @@ const Home: NextPage = () => {
   ]);
 
   const [txHashData, setTxHashData] = useState<any>(["none", ""]);
+
+  const [ownerOfTokenList, setOwnerOfTokenList] = useState<any>([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+
+  const [ownerOfTokenListTreasury, setOwnerOfTokenListTreasury] = useState<any>([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const [value, setValue] = useState("");
+
+  const [valueRetrieve, setValueRetrieve] = useState("");
 
   const { address, isConnected } = useAccount();
 
@@ -130,6 +162,59 @@ const Home: NextPage = () => {
                   "78432",
                 ]);
               }
+              console.log("--------------------------------------------");
+              const fetchOwnerOfTokens = async () => {
+                for (let i = 0; i < 10; i++) {
+                  try {
+                    const result = await readContract({
+                      address: originalContractAddress as `0x${string}`,
+                      abi: ERC721.abi,
+                      functionName: "ownerOf",
+                      args: [i],
+                      account: address,
+                    });
+                    console.log(i);
+                    console.log(result);
+                    if (result === address) {
+                      console.log("owner");
+                      ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                      ownerOfTokenList[i] = true;
+                      console.log(ownerOfTokenList);
+                    }
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+              };
+
+              const fetchOwnerOfTokensContract = async () => {
+                for (let i = 0; i < 10; i++) {
+                  try {
+                    const result = await readContract({
+                      address: originalContractAddress as `0x${string}`,
+                      abi: ERC721.abi,
+                      functionName: "ownerOf",
+                      args: [i],
+                      account: address,
+                    });
+                    console.log(i);
+                    console.log(result);
+                    if (result === inputs[0]) {
+                      console.log("owner");
+                      ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                      ownerOfTokenListTreasury[i] = true;
+                      console.log(ownerOfTokenList);
+                    }
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+              };
+
+              fetchOwnerOfTokens();
+              fetchOwnerOfTokensContract();
+              setOwnerOfTokenList(ownerOfTokenList);
+              setOwnerOfTokenListTreasury(ownerOfTokenListTreasury);
               setChainData([chain.id.toString(), chain.name]);
               console.log(scOriginalChainMetadata);
             });
@@ -179,11 +264,14 @@ const Home: NextPage = () => {
               abi: TreasuryAndWrapperCCIP.abi,
               functionName: "crossChainSolutionVariables",
             }).then((result) => {
-              console.log("idchainlink--",result);
-              
+              console.log("idchainlink--", result);
+
               var idChainlink = BigInt((result as any[])[2]);
-              console.log("idchainlink--",idChainlink);
-                if (idChainlink !== BigInt("426641194531640554287674730226785263383855284524")) {
+              console.log("idchainlink--", idChainlink);
+              if (
+                idChainlink !==
+                BigInt("426641194531640554287674730226785263383855284524")
+              ) {
                 setScOriginalChainMetadata([
                   originalContractAddress,
                   "Ethereum Sepolia",
@@ -196,7 +284,62 @@ const Home: NextPage = () => {
                   "43113",
                 ]);
               }
+
+              console.log("--------------------------------------------");
+              const fetchOwnerOfTokens = async () => {
+                for (let i = 0; i < 10; i++) {
+                  try {
+                    const result = await readContract({
+                      address: originalContractAddress as `0x${string}`,
+                      abi: ERC721.abi,
+                      functionName: "ownerOf",
+                      args: [i],
+                      account: address,
+                    });
+                    console.log(i);
+                    console.log(result);
+                    if (result === address) {
+                      console.log("owner");
+                      ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                      ownerOfTokenList[i] = true;
+                      console.log(ownerOfTokenList);
+                    }
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+              };
+
+              const fetchOwnerOfTokensContract = async () => {
+                for (let i = 0; i < 10; i++) {
+                  try {
+                    const result = await readContract({
+                      address: originalContractAddress as `0x${string}`,
+                      abi: ERC721.abi,
+                      functionName: "ownerOf",
+                      args: [i],
+                      account: address,
+                    });
+                    console.log(i);
+                    console.log(result);
+                    if (result === inputs[0]) {
+                      console.log("owner");
+                      ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                      ownerOfTokenListTreasury[i] = true;
+                      console.log(ownerOfTokenList);
+                    }
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+              };
+
+              fetchOwnerOfTokens();
+              fetchOwnerOfTokensContract();
+              setOwnerOfTokenList(ownerOfTokenList);
+              setOwnerOfTokenListTreasury(ownerOfTokenListTreasury);
               setChainData([chain.id.toString(), chain.name]);
+
               console.log(scOriginalChainMetadata);
             });
           });
@@ -211,16 +354,15 @@ const Home: NextPage = () => {
             }
           );
           setScOriginalChainMetadata(["", "", ""]);
+          setOwnerOfTokenList([]);
           setChainData(["", ""]);
         });
     }
   };
 
   const givePermission = async () => {
-    const inputIDs = [
-      "fetchTreasuryAndWrapperAddress__addressInput",
-      "wrapNFT__tokenIdInput",
-    ];
+    console.log(value);
+    const inputIDs = ["fetchTreasuryAndWrapperAddress__addressInput"];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
@@ -237,7 +379,7 @@ const Home: NextPage = () => {
     }
 
     var srcAddress = inputs[0];
-    var tokenId = inputs[1];
+    var tokenId = value;
     console.log(srcAddress);
 
     readContract({
@@ -283,25 +425,20 @@ const Home: NextPage = () => {
   };
 
   const makeSignMessage = () => {
-    const inputIDs = ["wrapNFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
+    const inputIDs = value;
 
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
+    if (inputIDs === "") {
+      toast.error("Please select NFT", {
         duration: 2000,
         position: "top-right",
       });
       return;
     }
-    const functionName =
-      ["78430", "78431", "78432"].includes(chainData[0])
-        ? "teleporterSetMint"
-        : ["43113", "11155111"].includes(chainData[0])
-        ? "ccipSetMint"
-        : "";
+    const functionName = ["78430", "78431", "78432"].includes(chainData[0])
+      ? "teleporterSetMint"
+      : ["43113", "11155111"].includes(chainData[0])
+      ? "ccipSetMint"
+      : "";
 
     if (functionName === "") {
       toast.error("Please connect to a chain", {
@@ -309,15 +446,15 @@ const Home: NextPage = () => {
         position: "top-right",
       });
       return;
-    } 
-    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
+    }
+    const message = `${functionName}(uint256, address, string),${inputIDs},${address},signature`;
     signMessage({ message });
   };
 
   const passMint = () => {
+    console.log(value);
     const inputIDs = [
-      "fetchTreasuryAndWrapperAddress__addressInput",
-      "wrapNFT__tokenIdInput",
+      "fetchTreasuryAndWrapperAddress__addressInput"
     ];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
@@ -331,6 +468,9 @@ const Home: NextPage = () => {
       });
       return;
     }
+    console.log(inputs[0]);
+    ///make value a number
+    const tokenID = Number(value);
 
     if (!isSuccess) {
       toast.error("Please sign the message", {
@@ -339,7 +479,7 @@ const Home: NextPage = () => {
       });
       return;
     }
-    
+
     const { chain, chains } = getNetwork();
     var idChain = chain?.id.toString() ?? "";
     if (idChain === "") {
@@ -361,11 +501,11 @@ const Home: NextPage = () => {
           address: result as `0x${string}`,
           abi: ERC721.abi,
           functionName: "getApproved",
-          args: [inputs[1]],
+            args: [tokenID],
         }).then((result) => {
           if (result !== inputs[0]) {
             toast.error(
-              `The address is not the approved for the token #${inputs[1]}`,
+              `The address is not the approved for the token #${tokenID}`,
               {
                 duration: 3000,
                 position: "top-right",
@@ -375,7 +515,7 @@ const Home: NextPage = () => {
           }
         });
       });
-      
+
       if (data === undefined) {
         return;
       } else {
@@ -385,7 +525,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: TreasuryAndWrapperTeleporter.abi,
         functionName: "passMint",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -402,16 +542,12 @@ const Home: NextPage = () => {
               duration: 2000,
               position: "top-right",
             });
-            
           })
           .catch((error) => {
             console.log(error);
           });
       });
-
-
     } else {
-
       readContract({
         address: inputs[0] as `0x${string}`,
         abi: TreasuryAndWrapperCCIP.abi,
@@ -422,11 +558,11 @@ const Home: NextPage = () => {
           address: result as `0x${string}`,
           abi: ERC721.abi,
           functionName: "getApproved",
-          args: [inputs[1]],
+          args: [tokenID],
         }).then((result) => {
           if (result !== inputs[0]) {
             toast.error(
-              `The address is not the approved for the token #${inputs[1]}`,
+              `The address is not the approved for the token #${tokenID}`,
               {
                 duration: 3000,
                 position: "top-right",
@@ -446,7 +582,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: TreasuryAndWrapperCCIP.abi,
         functionName: "passMint",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -473,14 +609,10 @@ const Home: NextPage = () => {
   };
 
   const makeSignMessageWithdrawMyToken = () => {
-    const inputIDs = ["withdrawMyTokenNFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
-
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
+    console.log(valueRetrieve);
+    
+    if (valueRetrieve === "") {
+      toast.error("Please select NFT", {
         duration: 2000,
         position: "top-right",
       });
@@ -499,16 +631,16 @@ const Home: NextPage = () => {
         position: "top-right",
       });
       return;
-    } 
+    }
 
-    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
+    const message = `${functionName}(uint256, address, string),${valueRetrieve},${address},signature`;
     signMessage({ message });
   };
 
   const withdrawMyToken = () => {
+    console.log(valueRetrieve);
     const inputIDs = [
-      "fetchTreasuryAndWrapperAddress__addressInput",
-      "withdrawMyTokenNFT__tokenIdInput",
+      "fetchTreasuryAndWrapperAddress__addressInput"
     ];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
@@ -530,6 +662,7 @@ const Home: NextPage = () => {
       });
       return;
     }
+    const tokenID = Number(valueRetrieve);
     const { chain, chains } = getNetwork();
     var idChain = chain?.id.toString() ?? "";
     if (idChain === "") {
@@ -545,7 +678,7 @@ const Home: NextPage = () => {
         address: inputs[0] as `0x${string}`,
         abi: TreasuryAndWrapperTeleporter.abi,
         functionName: "seeIfCanUnwrap",
-        args: [inputs[1]],
+        args: [tokenID],
       }).then((result) => {
         console.log(result);
         if (!result) {
@@ -569,7 +702,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: TreasuryAndWrapperTeleporter.abi,
         functionName: "withdrawMyToken",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -596,7 +729,7 @@ const Home: NextPage = () => {
         address: inputs[0] as `0x${string}`,
         abi: TreasuryAndWrapperCCIP.abi,
         functionName: "seeIfCanUnwrap",
-        args: [inputs[1]],
+        args: [tokenID],
       }).then((result) => {
         console.log(result);
         if (!result) {
@@ -620,7 +753,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: TreasuryAndWrapperCCIP.abi,
         functionName: "withdrawMyToken",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -659,17 +792,9 @@ const Home: NextPage = () => {
           </Head>
 
           <header className={styles.header}>
-            <HamburgerMenu numberBlocker={1} />
-            <div
-              style={{
-                marginTop: "2.5vw",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <img src="./logoPrincipal.svg" />
+            <img src="./logoPrincipal.svg" />
+            <div>
+              <HamburgerMenu numberBlocker={1} />
             </div>
           </header>
           <div className={styles.container}>
@@ -763,16 +888,27 @@ const Home: NextPage = () => {
                   <TabPanels>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
-                        <div>
-                          <Input
-                            placeholder="0"
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="wrapNFT__tokenIdInput"
-                          />
-                        </div>
+                        <RadioGroup
+                          onChange={setValue}
+                          value={value}
+                          className={styles.containerFormBottom__formRadioGroup}
+                        >
+                          {ownerOfTokenList.map((value: any, index: number) => {
+                            if (value) {
+                              return (
+                                <div>
+                                  <img
+                                    src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
+                                    width="100"
+                                  />
+                                  <p>{`Mighty Mouse #${index}`}</p>
+                                  <Radio key={index} value={index.toString()} />
+                                </div>
+                              );
+                            }
+                          })}
+                        </RadioGroup>
+
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer
@@ -827,16 +963,27 @@ const Home: NextPage = () => {
                     </TabPanel>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
-                        <div>
-                          <Input
-                            placeholder="0"
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="withdrawMyTokenNFT__tokenIdInput"
-                          />
-                        </div>
+
+                      <RadioGroup
+                          onChange={setValueRetrieve}
+                          value={valueRetrieve}
+                          className={styles.containerFormBottom__formRadioGroup}
+                        >
+                          {ownerOfTokenListTreasury.map((value: any, index: number) => {
+                            if (value) {
+                              return (
+                                <div>
+                                  <img
+                                    src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
+                                    width="100"
+                                  />
+                                  <p>{`Mighty Mouse #${index}`}</p>
+                                  <Radio key={index} value={index.toString()} />
+                                </div>
+                              );
+                            }
+                          })}
+                        </RadioGroup>
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer
@@ -865,13 +1012,20 @@ const Home: NextPage = () => {
             </main>
           </div>
           <footer className={styles.footer}>
-            <a
-              href="https://rainbow.me"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Made with ❤️ by your frens at 🌈
-            </a>
+            <p>
+              Made with ❤️ by{" "}
+              <a href="https://twitter.com/andrealbiac" target="_blank">
+                @andrealbiac
+              </a>
+              ,{" "}
+              <a href="https://twitter.com/jistro" target="_blank">
+                @jistro
+              </a>{" "}
+              and{" "}
+              <a href="https://twitter.com/ariutokintumi" target="_blank">
+                @ariutokintumi
+              </a>
+            </p>
           </footer>
         </div>
       )}

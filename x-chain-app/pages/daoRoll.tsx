@@ -214,17 +214,9 @@ const Home: NextPage = () => {
           </Head>
 
           <header className={styles.header}>
-            <HamburgerMenu numberBlocker={4} />
-            <div
-              style={{
-                marginTop: "2.5vw",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <img src="./logoPrincipal.svg" />
+            <img src="./logoPrincipal.svg" />
+            <div>
+              <HamburgerMenu numberBlocker={4} />
             </div>
           </header>
           <div className={styles.container}>
@@ -375,13 +367,9 @@ const Home: NextPage = () => {
             </main>
           </div>
           <footer className={styles.footer}>
-            <a
-              href="https://rainbow.me"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Made with ❤️ by your frens at 🌈
-            </a>
+          <p>
+          Made with ❤️ by <a href="https://twitter.com/andrealbiac" target="_blank">@andrealbiac</a>, <a href="https://twitter.com/jistro" target="_blank">@jistro</a> and <a href="https://twitter.com/ariutokintumi" target="_blank">@ariutokintumi</a>
+        </p>
           </footer>
         </div>
       )}

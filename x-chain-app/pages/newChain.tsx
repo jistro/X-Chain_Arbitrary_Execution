@@ -6,6 +6,8 @@ import HamburgerMenu from "../components/hamburgerMenu";
 import {
   Button,
   Input,
+  Radio,
+  RadioGroup,
   Tab,
   TabList,
   TabPanel,
@@ -17,7 +19,9 @@ import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import toast from "react-hot-toast";
 
 import GmFamCCIP from "../abis/ccip/GmFamCCIP.json";
+
 import GmFamTeleporter from "../abis/teleporter/GmFamTeleporter.json";
+import ERC721 from "../abis/ERC721.json";
 
 import { useAccount, useSignMessage } from "wagmi";
 
@@ -36,6 +40,25 @@ const Home: NextPage = () => {
   ]);
 
   const [txHashData, setTxHashData] = useState<any>(["none", ""]);
+  const [ownerOfTokenList, setOwnerOfTokenList] = useState<any>([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+
+  const [ownerOfTokenListTreasury, setOwnerOfTokenListTreasury] = useState<any>(
+    [false, false, false, false, false, false, false, false, false, false]
+  );
+  const [value, setValue] = useState("");
+
+  const [valueRetrieve, setValueRetrieve] = useState("");
 
   const { address, isConnected } = useAccount();
 
@@ -107,6 +130,53 @@ const Home: NextPage = () => {
             } else {
               setScNewChainMetadata(["Conduit Subnet Testnet", "78432"]);
             }
+
+            console.log("--------------------------------------------");
+            const fetchOwnerOfTokens = async () => {
+              for (let i = 0; i < 10; i++) {
+                try {
+                  const result = await readContract({
+                    address: inputs[0] as `0x${string}`,
+                    abi: GmFamTeleporter.abi,
+                    functionName: "ownerOf",
+                    args: [i],
+                    account: address,
+                  });
+                  console.log(i);
+                  console.log(result);
+                  if (result === address) {
+                    console.log("owner");
+                    ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                    ownerOfTokenList[i] = true;
+                    
+                  }
+                } catch (error) {}
+              }
+            };
+            const fetchOwnerOfTokensContract = async () => {
+              for (let i = 0; i < 10; i++) {
+                try {
+                  const result = await readContract({
+                    address: inputs[0] as `0x${string}`,
+                    abi: GmFamTeleporter.abi,
+                    functionName: "seeIfCanMint",
+                    args: [i],
+                    account: address,
+                  });
+                  ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                  ownerOfTokenListTreasury[i] = result;
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+            };
+            console.log(ownerOfTokenList);
+            console.log(ownerOfTokenListTreasury);
+            fetchOwnerOfTokens();
+            fetchOwnerOfTokensContract();
+            setOwnerOfTokenList(ownerOfTokenList);
+            setOwnerOfTokenListTreasury(ownerOfTokenListTreasury);
+
             setChainData([chain.id.toString(), chain.name]);
             console.log(scNewChainMetadata);
           });
@@ -151,18 +221,62 @@ const Home: NextPage = () => {
           }).then((result) => {
             console.log(result);
             var idChainlink = BigInt((result as any[])[2]);
-            console.log("idchainlink--",idChainlink);
-              if (idChainlink !== BigInt("426641194531640554287674730226785263383855284524")) {
-                setScNewChainMetadata([
-                "Ethereum Sepolia",
-                "11155111",
-              ]);
+            console.log("idchainlink--", idChainlink);
+            if (
+              idChainlink !==
+              BigInt("426641194531640554287674730226785263383855284524")
+            ) {
+              setScNewChainMetadata(["Ethereum Sepolia", "11155111"]);
             } else {
-              setScNewChainMetadata([
-                "Avalanche Fuji",
-                "43113",
-              ]);
+              setScNewChainMetadata(["Avalanche Fuji", "43113"]);
             }
+
+            console.log("--------------------------------------------");
+            const fetchOwnerOfTokens = async () => {
+              for (let i = 0; i < 10; i++) {
+                try {
+                  const result = await readContract({
+                    address: inputs[0] as `0x${string}`,
+                    abi: GmFamCCIP.abi,
+                    functionName: "ownerOf",
+                    args: [i],
+                    account: address,
+                  });
+                  console.log(i);
+                  console.log(result);
+                  if (result === address) {
+                    console.log("owner");
+                    ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                    ownerOfTokenList[i] = true;
+                    
+                  }
+                } catch (error) {}
+              }
+            };
+            const fetchOwnerOfTokensContract = async () => {
+              for (let i = 0; i < 10; i++) {
+                try {
+                  const result = await readContract({
+                    address: inputs[0] as `0x${string}`,
+                    abi: GmFamCCIP.abi,
+                    functionName: "seeIfCanMint",
+                    args: [i],
+                    account: address,
+                  });
+                  ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
+                  ownerOfTokenListTreasury[i] = result;
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+            };
+            console.log(ownerOfTokenList);
+            console.log(ownerOfTokenListTreasury);
+            fetchOwnerOfTokens();
+            fetchOwnerOfTokensContract();
+            setOwnerOfTokenList(ownerOfTokenList);
+            setOwnerOfTokenListTreasury(ownerOfTokenListTreasury);
+
             setChainData([chain.id.toString(), chain.name]);
             console.log(scNewChainMetadata);
           });
@@ -216,14 +330,10 @@ const Home: NextPage = () => {
   };
 
   const makeSignMessageGoBack = () => {
-    const inputIDs = ["goBackNFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
+    console.log(value);
 
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
+    if (value === "") {
+      toast.error("Please select a token", {
         duration: 2000,
         position: "top-right",
       });
@@ -244,7 +354,7 @@ const Home: NextPage = () => {
       return;
     }
 
-    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
+    const message = `${functionName}(uint256, address, string),${value},${address},signature`;
     signMessage({ message });
   };
 
@@ -388,8 +498,8 @@ const Home: NextPage = () => {
   const goBack = () => {
     const inputIDs = [
       "fetchGmFamAddress__addressInput",
-      "goBackNFT__tokenIdInput",
     ];
+    console.log(value);
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
@@ -419,6 +529,8 @@ const Home: NextPage = () => {
       });
       return;
     }
+
+    const tokenID = Number(value);
     if (["78430", "78431", "78432"].includes(idChain)) {
       console.log("teleporter");
       if (data === undefined) {
@@ -430,7 +542,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: GmFamTeleporter.abi,
         functionName: "goBackToOriginalCollection",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -452,7 +564,6 @@ const Home: NextPage = () => {
             console.log(error);
           });
       });
-
     } else {
       if (data === undefined) {
         return;
@@ -463,7 +574,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: GmFamCCIP.abi,
         functionName: "goBackToOriginalCollection",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -503,17 +614,9 @@ const Home: NextPage = () => {
           </Head>
 
           <header className={styles.header}>
-            <HamburgerMenu numberBlocker={2} />
-            <div
-              style={{
-                marginTop: "2.5vw",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <img src="./logoPrincipal.svg" />
+            <img src="./logoPrincipal.svg" />
+            <div>
+              <HamburgerMenu numberBlocker={2} />
             </div>
           </header>
           <div className={styles.container}>
@@ -596,16 +699,26 @@ const Home: NextPage = () => {
                   <TabPanels>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
-                        <div>
-                          <Input
-                            placeholder="0"
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="NFT__tokenIdInput"
-                          />
-                        </div>
+                      <RadioGroup
+                          onChange={setValueRetrieve}
+                          value={valueRetrieve}
+                          className={styles.containerFormBottom__formRadioGroup}
+                        >
+                          {ownerOfTokenListTreasury.map((value: any, index: number) => {
+                            if (value) {
+                              return (
+                                <div>
+                                  <img
+                                    src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
+                                    width="100"
+                                  />
+                                  <p>{`Mighty Mouse #${index}`}</p>
+                                  <Radio key={index} value={index.toString()} />
+                                </div>
+                              );
+                            }
+                          })}
+                        </RadioGroup>
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer
@@ -627,16 +740,27 @@ const Home: NextPage = () => {
                     </TabPanel>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Token ID</p>
-                        <div>
-                          <Input
-                            placeholder="0"
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="goBackNFT__tokenIdInput"
-                          />
-                        </div>
+                        <RadioGroup
+                          onChange={setValue}
+                          value={value}
+                          className={styles.containerFormBottom__formRadioGroup}
+                        >
+                          {ownerOfTokenList.map((value: any, index: number) => {
+                            if (value) {
+                              return (
+                                <div>
+                                  <img
+                                    src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
+                                    width="100"
+                                  />
+                                  <p>{`Mighty Mouse #${index}`}</p>
+                                  <Radio key={index} value={index.toString()} />
+                                </div>
+                              );
+                            }
+                          })}
+                        </RadioGroup>
+                        
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer
@@ -692,13 +816,20 @@ const Home: NextPage = () => {
             </main>
           </div>
           <footer className={styles.footer}>
-            <a
-              href="https://rainbow.me"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Made with ❤️ by your frens at 🌈
-            </a>
+            <p>
+              Made with ❤️ by{" "}
+              <a href="https://twitter.com/andrealbiac" target="_blank">
+                @andrealbiac
+              </a>
+              ,{" "}
+              <a href="https://twitter.com/jistro" target="_blank">
+                @jistro
+              </a>{" "}
+              and{" "}
+              <a href="https://twitter.com/ariutokintumi" target="_blank">
+                @ariutokintumi
+              </a>
+            </p>
           </footer>
         </div>
       )}

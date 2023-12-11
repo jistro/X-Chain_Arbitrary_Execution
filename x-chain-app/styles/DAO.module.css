@@ -1,13 +1,14 @@
 .header {
-  min-height: 22vh;
+  display: flex;
+  justify-content: space-between;
   background-color: #AFF1FF;
-  padding: 2vw 2vw;
+  padding: 1vw 1vw;
   border-top-left-radius: 2vw;
   border-top-right-radius: 2vw;
 }
 
 .header img {
-  width: 30vw;
+  width: 150px;
 }
 
 .container {
@@ -15,7 +16,7 @@
   background-color: #88E2FF;
 }
 .main {
-  padding-top: 10vw;
+  padding-top: 2.5vw;
   min-height: 68vh;
   display: flex;
   flex-direction: column;
@@ -24,7 +25,7 @@
 
 .main h1 {
   line-height: 1.15;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   text-decoration: underline;
   color: #16355c;

@@ -295,19 +295,9 @@ const Home: NextPage = () => {
   };
 
   const makeSignMessage = () => {
-    const inputIDs = ["NFT__tokenIdInput"];
-    const inputs = inputIDs.map((id) => {
-      const input = document.getElementById(id) as HTMLInputElement;
-      return input.value;
-    });
-
-    if (inputs.some((input) => input === "")) {
-      toast.error("Please fill the address input", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
+    console.log(valueRetrieve);
+    
+    
 
     const functionName = ["78430", "78431", "78432"].includes(chainData[0])
       ? "teleporterSetMint"
@@ -323,7 +313,7 @@ const Home: NextPage = () => {
       return;
     }
 
-    const message = `${functionName}(uint256, address, string),${inputs[0]},${address},signature`;
+    const message = `${functionName}(uint256, address, string),${valueRetrieve},${address},signature`;
     signMessage({ message });
   };
 
@@ -357,7 +347,8 @@ const Home: NextPage = () => {
   };
 
   const safeMint = () => {
-    const inputIDs = ["fetchGmFamAddress__addressInput", "NFT__tokenIdInput"];
+    console.log(valueRetrieve);
+    const inputIDs = ["fetchGmFamAddress__addressInput"];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
@@ -387,6 +378,16 @@ const Home: NextPage = () => {
       });
       return;
     }
+
+    if (valueRetrieve === "") {
+      toast.error("Please select a token", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    const tokenID = Number(valueRetrieve);
     if (["78430", "78431", "78432"].includes(idChain)) {
       console.log("teleporter");
       readContract({
@@ -417,7 +418,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: GmFamTeleporter.abi,
         functionName: "safeMint",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -444,7 +445,7 @@ const Home: NextPage = () => {
         address: inputs[0] as `0x${string}`,
         abi: GmFamCCIP.abi,
         functionName: "seeIfCanMint",
-        args: [inputs[1]],
+        args: [tokenID],
       }).then((result) => {
         console.log(result);
         if (!result) {
@@ -468,7 +469,7 @@ const Home: NextPage = () => {
         address: inputs[0] as "0x${string}",
         abi: GmFamCCIP.abi,
         functionName: "safeMint",
-        args: [inputs[1], dataSigned],
+        args: [tokenID, dataSigned],
         account: address,
       }).then((result) => {
         writeContract(result)
@@ -617,8 +618,7 @@ const Home: NextPage = () => {
           </header>
           <div className={styles.container}>
             <main className={styles.main}>
-              <h1>NFT Unwrapping function </h1>
-              <h1>(New Chain)</h1>
+              <h1>New Chain function </h1>
               <div className={styles.containerOutsideForm}>
                 <h2>gm Fam! Smart Contract Address</h2>
                 <Input

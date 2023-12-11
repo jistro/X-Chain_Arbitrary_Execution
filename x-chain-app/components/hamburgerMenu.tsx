@@ -55,7 +55,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
               backgroundColor={numberBlocker === 1 ? "gray.500" : ""}
               color={numberBlocker === 1 ? "white" : ""}
             >
-              NFT Wrapping (Original Chain)
+              Original Chain Functions
             </MenuItem>
             <MenuItem
               onClick={() =>
@@ -64,7 +64,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
               backgroundColor={numberBlocker === 2 ? "gray.500" : ""}
               color={numberBlocker === 2 ? "white" : ""}
             >
-              NFT Unwrapping (New Chain)
+              New Chain Functions
             </MenuItem>
             
             <MenuItem

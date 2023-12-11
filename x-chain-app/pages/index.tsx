@@ -799,7 +799,7 @@ const Home: NextPage = () => {
           </header>
           <div className={styles.container}>
             <main className={styles.main}>
-              <h1>NFT Wrapping function (Original Chain)</h1>
+              <h1>Original Chain functions</h1>
               <div className={styles.containerOutsideForm}>
                 <h2>Treasury and wrapper Smart Contract Address</h2>
                 <Input
@@ -882,7 +882,7 @@ const Home: NextPage = () => {
                         fontWeight: "bold",
                       }}
                     >
-                      Retrieve NFT from new chain SC
+                      Retrieve NFT
                     </Tab>
                   </TabList>
                   <TabPanels>

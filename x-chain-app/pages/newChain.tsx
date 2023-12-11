@@ -132,7 +132,8 @@ const Home: NextPage = () => {
       })
         .then((result) => {
           console.log(result);
-          if (result !== 1) {
+          // if not 1 or 3, not a ccip
+          if (result !== 1 && result !== 3) {
             toast.error(
               `The address is not a Treasury and Wrapper Smart Contract`,
               {
@@ -149,12 +150,18 @@ const Home: NextPage = () => {
             functionName: "crossChainSolutionVariables",
           }).then((result) => {
             console.log(result);
-            var idChainlink = (result as any[])[2];
-            console.log(idChainlink);
-            if (idChainlink !== 16015286601757825753) {
-              setScNewChainMetadata(["Avalanche Fuji", "43113"]);
+            var idChainlink = BigInt((result as any[])[2]);
+            console.log("idchainlink--",idChainlink);
+              if (idChainlink !== BigInt("426641194531640554287674730226785263383855284524")) {
+                setScNewChainMetadata([
+                "Ethereum Sepolia",
+                "11155111",
+              ]);
             } else {
-              setScNewChainMetadata(["Ethereum Sepolia", "11155111"]);
+              setScNewChainMetadata([
+                "Avalanche Fuji",
+                "43113",
+              ]);
             }
             setChainData([chain.id.toString(), chain.name]);
             console.log(scNewChainMetadata);

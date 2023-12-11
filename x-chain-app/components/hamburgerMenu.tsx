@@ -84,7 +84,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ numberBlocker }) => {
               backgroundColor={numberBlocker === 4 ? "gray.500" : ""}
               color={numberBlocker === 4 ? "white" : ""}
             >
-              DAO (Make vote to Original Chain)
+              DAO (Make vote in Original Chain)
             </MenuItem>
 
             <MenuItem

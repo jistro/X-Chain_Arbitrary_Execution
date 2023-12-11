@@ -17,8 +17,7 @@ import { getNetwork } from "@wagmi/core";
 import { readContract, prepareWriteContract, writeContract } from "@wagmi/core";
 import toast from "react-hot-toast";
 
-import GmFamCCIP from "../abis/ccip/GmFamCCIP.json";
-import GmFamTeleporter from "../abis/teleporter/GmFamTeleporter.json";
+import TreasuryAndWrapperForDAO from "../abis/dao/TreasuryAndWrapperForDAO.json";
 
 import { useAccount, useSignMessage } from "wagmi";
 
@@ -33,7 +32,7 @@ const Home: NextPage = () => {
 
   const [chainData, setChainData] = useState<any>(["", ""]);
 
-  const [scNewChainMetadata, setScNewChainMetadata] = useState<any>([
+  const [scOriginalChainMetadata, setScOriginalChainMetadata] = useState<any>([
     "",
     "",
     "",
@@ -47,7 +46,7 @@ const Home: NextPage = () => {
     message: "gm wagmi frens",
   });
 
-  const fetchGmFamAddress = async () => {
+  const fetchTreasuryAndWrapperAddress = async () => {
     const { chain, chains } = getNetwork();
     if (chain) {
       console.log("deploying on ", chain.name);
@@ -57,7 +56,7 @@ const Home: NextPage = () => {
       console.log("desconected");
       return;
     }
-    const inputIDs = ["fetchGmFamAddress__addressInput"];
+    const inputIDs = ["fetchTreasuryAndWrapperAddress__addressInput"];
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
       return input.value;
@@ -72,71 +71,25 @@ const Home: NextPage = () => {
     console.log(inputs);
     if (["78430", "78431", "78432"].includes(chain.id.toString())) {
       console.log("teleporter");
-      readContract({
-        address: inputs[0] as `0x${string}`,
-        abi: GmFamTeleporter.abi,
-        functionName: "crossChainSolution",
-      })
-        .then((result) => {
-          console.log(result);
-          if (result !== 2) {
-            toast.error(
-              `The address is not a Treasury and Wrapper Smart Contract`,
-              {
-                duration: 3000,
-                position: "top-right",
-              }
-            );
-            return;
-          }
-
-          readContract({
-            address: inputs[0] as `0x${string}`,
-            abi: GmFamTeleporter.abi,
-            functionName: "crossChainSolutionVariables",
-          }).then((result) => {
-            console.log(result);
-            var idTeleporter = (result as any[])[2].toString(16);
-            console.log(idTeleporter);
-            if (
-              idTeleporter ===
-              "ea70d815f0232f5419dabafe36c964ffe5c22d17ac367b60b556ab3e17a36458"
-            ) {
-              setScNewChainMetadata(["Amplify Subnet", "78430"]);
-            } else if (
-              idTeleporter ===
-              "d7cdc6f08b167595d1577e24838113a88b1005b471a6c430d79c48b4c89cfc53"
-            ) {
-              setScNewChainMetadata(["Bulletin Subnet Testnet", "78431"]);
-            } else {
-              setScNewChainMetadata(["Conduit Subnet Testnet", "78432"]);
-            }
-            setChainData([chain.id.toString(), chain.name]);
-            console.log(scNewChainMetadata);
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error(
-            `Error while fetching the Treasury and Wrapper Smart Contract address please check the address and try again`,
-            {
-              duration: 3000,
-              position: "top-right",
-            }
-          );
-          setScNewChainMetadata(["", ""]);
-          setChainData(["", ""]);
-        });
+      toast.error(
+        `The address is not a Treasury and Wrapper for DAO Smart Contract`,
+        {
+          duration: 3000,
+          position: "top-right",
+        }
+      );
+      return;
     } else {
       console.log("ccip");
       readContract({
         address: inputs[0] as `0x${string}`,
-        abi: GmFamCCIP.abi,
+        abi: TreasuryAndWrapperForDAO.abi,
         functionName: "crossChainSolution",
       })
         .then((result) => {
           console.log(result);
-          if (result !== 1) {
+          // if diferent to 1 or 3
+          if (result !== 1 && result !== 3) {
             toast.error(
               `The address is not a Treasury and Wrapper Smart Contract`,
               {
@@ -146,22 +99,37 @@ const Home: NextPage = () => {
             );
             return;
           }
-
           readContract({
             address: inputs[0] as `0x${string}`,
-            abi: GmFamCCIP.abi,
-            functionName: "crossChainSolutionVariables",
+            abi: TreasuryAndWrapperForDAO.abi,
+            functionName: "seeOriginalContractAddress",
           }).then((result) => {
             console.log(result);
-            var idChainlink = (result as any[])[2];
-            console.log(idChainlink);
-            if (idChainlink !== 16015286601757825753) {
-              setScNewChainMetadata(["Avalanche Fuji", "43113"]);
-            } else {
-              setScNewChainMetadata(["Ethereum Sepolia", "11155111"]);
-            }
-            setChainData([chain.id.toString(), chain.name]);
-            console.log(scNewChainMetadata);
+            var originalContractAddress = result;
+            readContract({
+              address: inputs[0] as `0x${string}`,
+              abi: TreasuryAndWrapperForDAO.abi,
+              functionName: "crossChainSolutionVariables",
+            }).then((result) => {
+              console.log(result);
+              var idChainlink = BigInt((result as any[])[2]);
+              console.log("idchainlink--",idChainlink);
+                if (idChainlink !== BigInt("426641194531640554287674730226785263383855284524")) {
+                setScOriginalChainMetadata([
+                  originalContractAddress,
+                  "Ethereum Sepolia",
+                  "11155111",
+                ]);
+              } else {
+                setScOriginalChainMetadata([
+                  originalContractAddress,
+                  "Avalanche Fuji",
+                  "43113",
+                ]);
+              }
+              setChainData([chain.id.toString(), chain.name]);
+              console.log(scOriginalChainMetadata);
+            });
           });
         })
         .catch((error) => {
@@ -173,10 +141,63 @@ const Home: NextPage = () => {
               position: "top-right",
             }
           );
-          setScNewChainMetadata(["", ""]);
+          setScOriginalChainMetadata(["", "", ""]);
           setChainData(["", ""]);
         });
     }
+  };
+
+  const delegateVote = async () => {
+    const inputIDs = [
+      "fetchTreasuryAndWrapperAddress__addressInput",
+      "vote__tokenIdInput",
+      "vote__proposalIdInput",
+    ];
+    const inputs = inputIDs.map((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      return input.value;
+    });
+    if (inputs.some((input) => input === "")) {
+      toast.error("Please fill the input", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    //function makeVote(uint256 proposalID, uint256 nftID)
+    prepareWriteContract({
+      address: inputs[0] as `0x${string}`,
+      abi: TreasuryAndWrapperForDAO.abi,
+      functionName: "makeVote",
+      args: [inputs[2], inputs[1]],
+      account: address,
+    })
+      .then((result) => {
+        console.log(result);
+        writeContract(result)
+          .then((result) => {
+            console.log(result);
+            toast.success("Vote created", {
+              duration: 2000,
+              position: "top-right",
+            });
+            setTxHashData([result, result]);
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Error while creating the vote", {
+              duration: 2000,
+              position: "top-right",
+            });
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Error while creating the vote", {
+          duration: 2000,
+          position: "top-right",
+        });
+      });
   };
 
   return (
@@ -193,7 +214,7 @@ const Home: NextPage = () => {
           </Head>
 
           <header className={styles.header}>
-            <HamburgerMenu numberBlocker={3} />
+            <HamburgerMenu numberBlocker={4} />
             <div
               style={{
                 marginTop: "2.5vw",
@@ -208,16 +229,15 @@ const Home: NextPage = () => {
           </header>
           <div className={styles.container}>
             <main className={styles.main}>
-              <h1>NFT Unwrapping function </h1>
-              <h1>(New Chain)</h1>
+              <h1>DAO demo (Make vote in Original Chain)</h1>
               <div className={styles.containerOutsideForm}>
-                <h2>gm Fam! Smart Contract Address</h2>
+                <h2>Treadury and Wrapper for DAO Smart Contract Address</h2>
                 <Input
                   placeholder="0x..."
                   backgroundColor={"white"}
-                  id="fetchGmFamAddress__addressInput"
+                  id="fetchTreasuryAndWrapperAddress__addressInput"
                 />
-                <Button size={"sm"} onClick={fetchGmFamAddress}>
+                <Button size={"sm"} onClick={fetchTreasuryAndWrapperAddress}>
                   <p>Search</p>
                 </Button>
               </div>
@@ -225,21 +245,33 @@ const Home: NextPage = () => {
                 <h2>Debug information</h2>
                 <br />
                 <p>
-                  Current chain: <strong>{chainData[1]}</strong>
-                </p>
-                <p>
-                  Current chain ID: <strong>{chainData[0]}</strong>
-                </p>
-                <p>
-                  Original Chain:{" "}
+                  Original SC:{" "}
                   <strong>
-                    {scNewChainMetadata[0] === "" ? "" : scNewChainMetadata[0]}
+                    {scOriginalChainMetadata[0] === ""
+                      ? ""
+                      : scOriginalChainMetadata[0]}
                   </strong>
                 </p>
                 <p>
-                  Destination/Original Chain ID:{" "}
+                  Original Chain: <strong>{chainData[1]}</strong>
+                </p>
+                <p>
+                  Chain ID: <strong>{chainData[0]}</strong>
+                </p>
+                <p>
+                  Destination Chain:{" "}
                   <strong>
-                    {scNewChainMetadata[1] === "" ? "" : scNewChainMetadata[1]}
+                    {scOriginalChainMetadata[1] === ""
+                      ? ""
+                      : scOriginalChainMetadata[1]}
+                  </strong>
+                </p>
+                <p>
+                  Chain ID:{" "}
+                  <strong>
+                    {scOriginalChainMetadata[2] === ""
+                      ? ""
+                      : scOriginalChainMetadata[2]}
                   </strong>
                 </p>
                 <p>
@@ -267,123 +299,22 @@ const Home: NextPage = () => {
                         fontWeight: "bold",
                       }}
                     >
-                      Make a proposal
-                    </Tab>
-                    <Tab
-                      fontSize={"1.5vw"}
-                      fontWeight={"bold"}
-                      color={"#29444D"}
-                      bg={"#528899"}
-                      _selected={{
-                        color: "#16355C",
-                        bg: "#AFF1FF",
-                        fontWeight: "bold",
-                      }}
-                    >
                       Vote
                     </Tab>
                   </TabList>
                   <TabPanels>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                        <p>Title of the proposal</p>
+                      <p>Token ID</p>
                         <div>
                           <Input
-                            placeholder=""
+                            placeholder="0"
                             backgroundColor={"white"}
                             size={"sm"}
-                            id="makeProposal__titleInput"
+                            style={{ width: "20vw" }}
+                            id="vote__tokenIdInput"
                           />
                         </div>
-                        <p>Description of the proposal</p>
-                        <div>
-                          <Input
-                            placeholder="This proposal is about..."
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            id="makeProposal__descriptionInput"
-                          />
-                        </div>
-                        <p>Rollup vote (New -&gt; Original chain)</p>
-                        <Select
-                          size={"sm"}
-                          backgroundColor={"white"}
-                          id="makeProposal__rollupVoteSelect"
-                          onChange={(e) => {
-                            console.log(e.target.value);
-                            //setRollupVote  setTypeOfProposal
-                            if (e.target.value === "yes") {
-                              setRollupVote(true);
-                            } else {
-                              setRollupVote(false);
-                            }
-                            console.log(RollupVote);
-                          }}
-                        >
-                          <option value="no">No</option>
-                          <option value="yes">Yes</option>
-                        </Select>
-                        {RollupVote && (
-                          <>
-                            <p>Original chain proposal ID</p>
-                            <div>
-                              <Input
-                                placeholder="0"
-                                backgroundColor={"white"}
-                                size={"sm"}
-                                id="makeProposal__originalChainProposalIDInput"
-                                style={{ width: "20vw" }}
-                              />
-                            </div>
-                          </>
-                        )}
-                        <p> Type of proposal</p>
-                        <Select
-                          size={"sm"}
-                          backgroundColor={"white"}
-                          id="makeProposal__typeOfProposalSelect"
-                          onChange={(e) => {
-                            console.log(e.target.value);
-                            //setRollupVote  setTypeOfProposal
-                            if (e.target.value === "binary") {
-                              setMultipleVote(false);
-                            } else {
-                              setMultipleVote(true);
-                            }
-                            console.log(MultipleVote);
-                          }}
-                        >
-                          <option value="binary">Binary</option>
-                          <option value="multiple">Multiple</option>
-                        </Select>
-                        {MultipleVote && (
-                          <>
-                            <p>Number of options</p>
-                            <div>
-                              <Input
-                                placeholder="0"
-                                backgroundColor={"white"}
-                                size={"sm"}
-                                id="makeProposal__numberOfOptionsInput"
-                                style={{ width: "20vw" }}
-                              />
-                            </div>
-                          </>
-                        )}
-
-                        <div
-                          className={
-                            styles.containerFormBottom__form__ButtonContainer
-                          }
-                        >
-                          <Button size="sm">
-                            <p>Make Proposal</p>
-                          </Button>
-                        </div>
-                      </div>
-                    </TabPanel>
-                    <TabPanel>
-                      <div className={styles.containerFormBottom__form}>
                         <p>Proposal ID</p>
                         <div>
                           <Input
@@ -391,26 +322,19 @@ const Home: NextPage = () => {
                             backgroundColor={"white"}
                             size={"sm"}
                             style={{ width: "20vw" }}
-                            id="goBackNFT__tokenIdInput"
+                            id="vote__proposalIdInput"
                           />
                         </div>
-                        <p>Number of vote</p>
-                        <div>
-                          <Input
-                            placeholder="0"
-                            backgroundColor={"white"}
-                            size={"sm"}
-                            style={{ width: "20vw" }}
-                            id="goBackNFT__tokenIdInput"
-                          />
-                        </div>
+                        
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer
                           }
                         >
-                          <Button size="sm">
-                            <p>Vote</p>
+                          <Button size="sm"
+                            onClick={delegateVote}
+                          >
+                            <p>Delegate Vote</p>
                           </Button>
                         </div>
                         {txHashData[0] !== "none" ? (

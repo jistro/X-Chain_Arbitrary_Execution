@@ -156,7 +156,8 @@ const Home: NextPage = () => {
       })
         .then((result) => {
           console.log(result);
-          if (result !== 1) {
+          // if diferent to 1 or 3
+          if (result !== 1 && result !== 3) {
             toast.error(
               `The address is not a Treasury and Wrapper Smart Contract`,
               {
@@ -178,10 +179,11 @@ const Home: NextPage = () => {
               abi: TreasuryAndWrapperCCIP.abi,
               functionName: "crossChainSolutionVariables",
             }).then((result) => {
-              console.log(result);
-              var idChainlink = (result as any[])[2];
-              console.log(idChainlink);
-              if (idChainlink !== 16015286601757825753) {
+              console.log("idchainlink--",result);
+              
+              var idChainlink = BigInt((result as any[])[2]);
+              console.log("idchainlink--",idChainlink);
+                if (idChainlink !== BigInt("426641194531640554287674730226785263383855284524")) {
                 setScOriginalChainMetadata([
                   originalContractAddress,
                   "Ethereum Sepolia",

@@ -896,7 +896,7 @@ const Home: NextPage = () => {
                           {ownerOfTokenList.map((value: any, index: number) => {
                             if (value) {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
                                     width="100"
@@ -972,7 +972,7 @@ const Home: NextPage = () => {
                           {ownerOfTokenListTreasury.map((value: any, index: number) => {
                             if (value) {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
                                     width="100"

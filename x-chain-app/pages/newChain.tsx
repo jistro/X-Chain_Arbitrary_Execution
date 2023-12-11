@@ -148,7 +148,6 @@ const Home: NextPage = () => {
                     console.log("owner");
                     ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
                     ownerOfTokenList[i] = true;
-                    
                   }
                 } catch (error) {}
               }
@@ -248,7 +247,6 @@ const Home: NextPage = () => {
                     console.log("owner");
                     ///agregar si i es owner pon true en la lista OwnerOfTokenList[i] = true
                     ownerOfTokenList[i] = true;
-                    
                   }
                 } catch (error) {}
               }
@@ -496,9 +494,7 @@ const Home: NextPage = () => {
   };
 
   const goBack = () => {
-    const inputIDs = [
-      "fetchGmFamAddress__addressInput",
-    ];
+    const inputIDs = ["fetchGmFamAddress__addressInput"];
     console.log(value);
     const inputs = inputIDs.map((id) => {
       const input = document.getElementById(id) as HTMLInputElement;
@@ -699,25 +695,30 @@ const Home: NextPage = () => {
                   <TabPanels>
                     <TabPanel>
                       <div className={styles.containerFormBottom__form}>
-                      <RadioGroup
+                        <RadioGroup
                           onChange={setValueRetrieve}
                           value={valueRetrieve}
                           className={styles.containerFormBottom__formRadioGroup}
                         >
-                          {ownerOfTokenListTreasury.map((value: any, index: number) => {
-                            if (value) {
-                              return (
-                                <div>
-                                  <img
-                                    src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
-                                    width="100"
-                                  />
-                                  <p>{`Mighty Mouse #${index}`}</p>
-                                  <Radio key={index} value={index.toString()} />
-                                </div>
-                              );
+                          {ownerOfTokenListTreasury.map(
+                            (value: any, index: number) => {
+                              if (value) {
+                                return (
+                                  <div key={index}>
+                                    <img
+                                      src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
+                                      width="100"
+                                    />
+                                    <p>{`Mighty Mouse #${index}`}</p>
+                                    <Radio
+                                      key={index}
+                                      value={index.toString()}
+                                    />
+                                  </div>
+                                );
+                              }
                             }
-                          })}
+                          )}
                         </RadioGroup>
                         <div
                           className={
@@ -748,7 +749,7 @@ const Home: NextPage = () => {
                           {ownerOfTokenList.map((value: any, index: number) => {
                             if (value) {
                               return (
-                                <div>
+                                <div key={index}>
                                   <img
                                     src={`https://ipfs.io/ipfs/Qmbnmyv2ZwgnmX8E7qs26LAXv77xp8wpMqULUXEy2xJBGn/${index}.jpg`}
                                     width="100"
@@ -760,7 +761,7 @@ const Home: NextPage = () => {
                             }
                           })}
                         </RadioGroup>
-                        
+
                         <div
                           className={
                             styles.containerFormBottom__form__ButtonContainer

@@ -184,7 +184,7 @@ contract GmFam is ERC721, ERC721Burnable, ERC721Royalty, AccessControl, StringCo
             receiver: abi.encode(OriginalChainReceiverContractAddress),
             data: abi.encodeWithSignature("ccipSetIdToUnwrap(string)", dataToSend),
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 1500_000, strict: false})),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 600_000, strict: false})),
             feeToken: i_link
         });
 

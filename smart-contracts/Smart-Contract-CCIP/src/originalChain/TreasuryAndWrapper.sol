@@ -177,7 +177,7 @@ contract TreasuryAndWrapper is AccessControl, StringConverter {
             receiver: abi.encode(NewChainReceiverContractAddress),
             data: abi.encodeWithSignature("ccipSetMint(string)", dataToSend),
             tokenAmounts: new Client.EVMTokenAmount[](0),
-            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 1500_000, strict: false})),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 600_000, strict: false})),
             feeToken: i_link
         });
 

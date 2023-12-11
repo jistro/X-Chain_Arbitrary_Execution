@@ -231,7 +231,7 @@ const Home: NextPage = () => {
             <main className={styles.main}>
               <h1>DAO demo (Make vote in Original Chain)</h1>
               <div className={styles.containerOutsideForm}>
-                <h2>Treadury and Wrapper for DAO Smart Contract Address</h2>
+                <h2>Treasury and Wrapper for DAO Smart Contract Address</h2>
                 <Input
                   placeholder="0x..."
                   backgroundColor={"white"}
